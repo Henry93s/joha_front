@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React, { useEffect, useState } from 'react';
-import { Badge, Calendar } from 'antd';
+import { Badge, Calendar, ConfigProvider } from 'antd';
 import 'dayjs/locale/ko';
 // antd 라이브러리 Calendar 에서 locale 속성을 import 하여 월, 요일 표시를 한국어로 변경하기 위함
 import locale from 'antd/es/date-picker/locale/ko_KR';
@@ -239,21 +239,48 @@ const CalendarComponent = () => {
 
   return (
     <CalendarContainer>
-      <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen}
-      // headerRender props 코드 수정으로 기본 스타일을 변경시킴
-      headerRender={({ value, onChange }) => {
-          const year = value.year();
-          const month = value.month();
-          return (
-            <HeaderContainer>
-              <CalendarHeaderControl onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
-                <CalendarHeader>
-                  {year}년 {month + 1}월
-                </CalendarHeader>
-              <CalendarHeaderControl onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
-            </HeaderContainer>
-          );
-        }}/>
+      <ConfigProvider
+        // antd 라이브러리 기본 값을 수정하기 위한 설정 provider, 컴포넌트 토큰 적용(가이드 문서 확인)
+        theme={{
+          token: {
+            // antd 글로벌 컴포넌트 토큰 정의
+            fontFamily: "Pretendard",
+          },
+          components: {
+            Calendar: {
+              /* antd 캘린더 컴포넌트 토큰 정의 */
+              // 선택된 날짜 셀 배경
+              itemActiveBg: "#b5ebeb",
+              // hover된 날짜 셀 배경
+              controlItemBgHover: "#d2fafa",
+              // 선택된 날짜 셀 의 선, 날짜 글씨 색
+              colorPrimary: "#039f9f",
+            },
+            Badge: {
+              /* antd 캘린더 내부 일정 컴포넌트 토큰 정의 */
+              // 선택된 날짜 셀 의 글씨 색
+              colorText: "#5b5a5a",
+            }
+          },
+        }}
+      >
+        <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen}
+        // headerRender props 코드 수정으로 기본 스타일을 변경시킴
+        headerRender={({ value, onChange }) => {
+            const year = value.year();
+            const month = value.month();
+            return (
+              <HeaderContainer>
+                <CalendarHeaderControl onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
+                  <CalendarHeader>
+                    {year}년 {month + 1}월
+                  </CalendarHeader>
+                <CalendarHeaderControl onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
+              </HeaderContainer>
+            );
+          }}
+        />
+      </ConfigProvider>
     </CalendarContainer>
   );
 };
