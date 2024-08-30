@@ -7,9 +7,10 @@ import { ReactComponent as Search } from '../../assets/icons/search.svg'; // SVG
 import { ReactComponent as Story } from '../../assets/icons/story.svg'; // SVG 파일을 컴포넌트로 import
 
 const FooterDiv = styled.div`
-    position: sticky;
-    left: 0;
+    position: fixed;
     bottom: 0;
+    width: 100vw;
+    max-width: 700px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -17,6 +18,7 @@ const FooterDiv = styled.div`
     height: 67px;
     border-top: 1px solid #E6E6E6;
     background:#fff;
+    z-index: 10;
 `;
 
 const MenuItem = styled(Link)`
