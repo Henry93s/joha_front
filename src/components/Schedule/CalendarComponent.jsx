@@ -73,6 +73,13 @@ const DateP = styled.p.attrs(props => ({
   padding-right: 3px;
 `;
 
+// 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위한 스타일드 컴포넌트
+const HiddenDateStyle = styled.div`
+  .ant-picker-calendar-date-value {
+    display: none;
+  }
+`;
+
 // 공휴일 데이터를 정의하는 함수
 const getHolidayData = (value) => {
   const holidays = {
@@ -190,12 +197,7 @@ const CalendarComponent = () => {
     onChange(newValue);
   };
 
-  // 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위한 함수
-  const HiddenDateStyle = styled.div`
-    .ant-picker-calendar-date-value {
-      display: none;
-    }
-  `;
+
 
   return (
     <CalendarContainer>
@@ -214,7 +216,7 @@ const CalendarComponent = () => {
               // hover된 날짜 셀 배경
               controlItemBgHover: "#d2fafa",
               // 선택된 날짜 셀 의 선 색
-              colorPrimary: "#039f9f",
+              colorPrimary: "#51d6d6",
             },
             Badge: {
               /* antd 캘린더 내부 일정 컴포넌트 토큰 정의 */
