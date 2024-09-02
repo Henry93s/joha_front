@@ -45,8 +45,6 @@ const JoinBox = styled.div`
     }
 `;
 
-const LoginForm = styled.form``;
-
 const Login = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -76,7 +74,7 @@ const Login = () => {
     };
 
     return (
-        <LoginForm onSubmit={onSubmitHandler}>
+        <form onSubmit={onSubmitHandler}>
             <LoginInput
                 type="email"
                 placeholder="이메일"
@@ -102,7 +100,7 @@ const Login = () => {
             <JoinBox>
                 아직 회원이 아니세요? <Link to="/join">회원가입</Link>
             </JoinBox>
-        </LoginForm>
+        </form>
     );
 };
 

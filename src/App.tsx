@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";
 import InquiryPage from "../src/pages/InquiryPage";
 import LoginPage from "../src/pages/LoginPage";
+import JoinPage from "./pages/JoinPage";
 
 function App() {
     return (
@@ -22,6 +23,10 @@ function App() {
                     <Route
                         path="/login"
                         element={<LoginPage />}
+                    />
+                    <Route
+                        path="/join"
+                        element={<JoinPage />}
                     />
                 </Routes>
             </BrowserRouter>
