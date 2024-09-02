@@ -1,10 +1,11 @@
 import styled from "styled-components";
-import React, { Children, useEffect, useState } from 'react';
+import React, { Children, useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Calendar, ConfigProvider } from 'antd';
 import 'dayjs/locale/ko';
 // antd 라이브러리 Calendar 에서 locale 속성을 import 하여 월, 요일 표시를 한국어로 변경하기 위함
 import locale from 'antd/es/date-picker/locale/ko_KR';
 import { Lunar, Solar } from "lunar-javascript";
+import dayjs from "dayjs";
 
 const CalendarContainer = styled.div`
   width: 100%;
@@ -73,6 +74,21 @@ const DateP = styled.p.attrs(props => ({
   padding-right: 3px;
 `;
 
+// 일자 클릭 시 발생하는 슬라이더 모달 컨테이너
+const MonthSlideContainer = styled.div.attrs(props => ({
+  style: {
+    display: props.$isDisplay ? "block" : "none",
+  }
+}))`
+  width: 100vw;
+  height: 50vh;
+  display: none;
+  color: beige;
+
+  transition: all 1s;  
+`
+
+
 // 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위한 스타일드 컴포넌트
 const HiddenDateStyle = styled.div`
   .ant-picker-calendar-date-value {
@@ -114,39 +130,15 @@ const getLunarHolidayData = (value) => {
   return lunarHolidays[monthDay] || null;
 };
 
-// 특정 날짜에 대한 mockup 이벤트 데이터를 반환하는 함수
-const getListData = (value) => {
-  // 특정 날짜 리스트
-  let listData = [];
-  // 기본 공휴일과 추석, 설날 공휴일 변수 정의
-  const holiday = getHolidayData(value);
-  const lunarHoliday = getLunarHolidayData(value);
 
-  // 기본 공휴일을 list 에 포함
-  if (holiday) {
-    listData.push({
-      type: 'error', // 공휴일 스타일을 'error'로 설정 => 빨간색
-      content: holiday,
-    });
-  }
-  // 매년 변하는 추석, 설날 공휴일을 list 에 포함 (lunar-javascript 라이브러리)
-  if (lunarHoliday) {
-    listData.push({
-      type: 'error', // 명절 스타일을 'error'로 설정 => 빨간색
-      content: lunarHoliday,
-    });
-  }
-
-  // 추가적인 이벤트 데이터
-  // ...
-
-  return listData;
-};
 
 
 const CalendarComponent = () => {
   // 화면 너비가 1000 이상일 때 fullscreen 캘린더 props 를 적용하기 위한 state
   const [isFullScreen, setIsFullScreen] = useState(window.innerWidth >= 1000);
+
+  // 현재 월 달력에서 매일매일 일정 데이터 저장 상태
+  const [dateSchedule, setDateSchedule] = useState([]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -157,8 +149,55 @@ const CalendarComponent = () => {
     window.addEventListener('resize', handleResize);
   }, [window.innerWidth]);
         
+  // 특정 날짜에 대한 mockup 이벤트 데이터를 반환하는 함수
+  const getListData = useCallback((value) => {
+    const newListData = [];
+
+    // 기본 공휴일과 추석, 설날 공휴일 변수 정의
+    const holiday = getHolidayData(value);
+    const lunarHoliday = getLunarHolidayData(value);
+
+    // 기본 공휴일을 list 에 포함
+    if (holiday) {
+      newListData.push({
+        type: 'error', // 공휴일 스타일을 'error'로 설정 => 빨간색
+        content: holiday,
+      });
+    }
+    // 매년 변하는 추석, 설날 공휴일을 list 에 포함 (lunar-javascript 라이브러리)
+    if (lunarHoliday) {
+      newListData.push({
+        type: 'error', // 명절 스타일을 'error'로 설정 => 빨간색
+        content: lunarHoliday,
+      });
+    }
+
+    // 추가적인 이벤트 데이터
+    // ...
+
+    return newListData;
+  }, []);
+
+  // 해당 월에 있는 매일 일정 스케쥴을 useEffect 로 dateSchedule 에 저장시킨다.
+  useEffect(() => {
+    const initialSchedule = [];
+    // 초기 상태를 한 번만 설정
+    const currentDate = dayjs();
+    const daysInMonth = currentDate.daysInMonth();
+  
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = currentDate.date(day);
+      const listData = getListData(date);
+      initialSchedule.push({ index: day, schedule: listData });
+    }
+  
+    setDateSchedule(initialSchedule);
+  }, [getListData]);
+
+  console.log(dateSchedule);
+
   // 각 셀에 맞는 렌더링 방식을 결정하는 함수
-  const cellRender = (current) => {
+  const cellRender = useCallback((current) => {
     const listData = getListData(current);
     // 토요일 또는 공휴일(일욜 포함) 여부를 파악하여 글씨 색 변경 스타일 컴포넌트를 적용하기 위함
     const isSaturday = current.day() === 6;
@@ -176,15 +215,17 @@ const CalendarComponent = () => {
         </DateP>
         
         <Events>
-            {listData.map((item) => (
-              <li key={item.content}>
+            {listData.map((item, index) => (
+              <li key={`${item.content} - ${index}`}>
                 <Badge status={item.type} text={isFullScreen ? item.content : ''} />
               </li>
             ))}
         </Events>
       </>
     )
-  };
+  }, [getListData, isFullScreen]);
+
+  
 
   // 월을 변경하는 핸들러 함수들
   const onChangeMonthPrev = (current, onChange) => {
@@ -200,52 +241,58 @@ const CalendarComponent = () => {
 
 
   return (
-    <CalendarContainer>
-      <ConfigProvider
-        // antd 라이브러리 기본 값을 수정하기 위한 설정 provider, 컴포넌트 토큰 적용(가이드 문서 확인)
-        theme={{
-          token: {
-            // antd 글로벌 컴포넌트 토큰 정의
-            fontFamily: "Pretendard",
-          },
-          components: {
-            Calendar: {
-              /* antd 캘린더 컴포넌트 토큰 정의 */
-              // 선택된 날짜 셀 배경
-              itemActiveBg: "#b5ebeb",
-              // hover된 날짜 셀 배경
-              controlItemBgHover: "#d2fafa",
-              // 선택된 날짜 셀 의 선 색
-              colorPrimary: "#51d6d6",
+    <>
+      <CalendarContainer>
+        <ConfigProvider
+          // antd 라이브러리 기본 값을 수정하기 위한 설정 provider, 컴포넌트 토큰 적용(가이드 문서 확인)
+          theme={{
+            token: {
+              // antd 글로벌 컴포넌트 토큰 정의
+              fontFamily: "Pretendard",
             },
-            Badge: {
-              /* antd 캘린더 내부 일정 컴포넌트 토큰 정의 */
-              // 선택된 날짜 셀 의 글씨 색
-              colorText: "#5b5a5a",
-            }
-          },
-        }}
-      >
-        <HiddenDateStyle>
-          <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen} 
-          // headerRender props 코드 수정으로 기본 스타일을 변경시킴
-          headerRender={({ value, onChange }) => {
-              const year = value.year();
-              const month = value.month();
-              return (
-                <HeaderContainer>
-                  <CalendarHeaderControl onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
-                    <CalendarHeader>
-                      {year}년 {month + 1}월
-                    </CalendarHeader>
-                  <CalendarHeaderControl onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
-                </HeaderContainer>
-              );
-            }}
-          />
-        </HiddenDateStyle>
-      </ConfigProvider>
-    </CalendarContainer>
+            components: {
+              Calendar: {
+                /* antd 캘린더 컴포넌트 토큰 정의 */
+                // 선택된 날짜 셀 배경
+                itemActiveBg: "#b5ebeb",
+                // hover된 날짜 셀 배경
+                controlItemBgHover: "#d2fafa",
+                // 선택된 날짜 셀 의 선 색
+                colorPrimary: "#51d6d6",
+              },
+              Badge: {
+                /* antd 캘린더 내부 일정 컴포넌트 토큰 정의 */
+                // 선택된 날짜 셀 의 글씨 색
+                colorText: "#5b5a5a",
+              }
+            },
+          }}
+        >
+          <HiddenDateStyle>
+            <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen} 
+            
+            // headerRender props 코드 수정으로 기본 스타일을 변경시킴
+            headerRender={({ value, onChange }) => {
+                const year = value.year();
+                const month = value.month();
+                return (
+                  <HeaderContainer>
+                    <CalendarHeaderControl onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
+                      <CalendarHeader>
+                        {year}년 {month + 1}월
+                      </CalendarHeader>
+                    <CalendarHeaderControl onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
+                  </HeaderContainer>
+                );
+              }}
+            />
+          </HiddenDateStyle>
+        </ConfigProvider>
+      </CalendarContainer>
+      <MonthSlideContainer>
+      
+      </MonthSlideContainer>
+    </>
   );
 };
 
