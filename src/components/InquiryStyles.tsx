@@ -75,7 +75,7 @@ export const ChatWrapper = styled.div<{ $isUser: boolean }>`
 export const ChatMessage = styled.div<{ $isUser: boolean }>`
     margin: 10px 0;
     padding: 10px;
-    background-color: ${(props) => (props.$isUser ? "#26bdbe" : "#ECECEC")};
+    background-color: ${(props) => (props.$isUser ? "#26bdbe" : "#ececec")};
     color: ${(props) => (props.$isUser ? "white" : "black")};
     border-radius: 10px;
     max-width: 70%;
@@ -111,18 +111,23 @@ export const ChatInput = styled.input<{ disabled: boolean }>`
     padding: 10px;
     border-radius: 20px;
     margin-right: 10px;
-    background: ${(props) => (props.disabled ? "#e0e0e0" : "#ECECEC")};
+    background: #ececec !important;
+    border: none !important;
     color: ${(props) => (props.disabled ? "#cccccc" : "black")};
     cursor: ${(props) => (props.disabled ? "not-allowed" : "text")};
+
+    &:focus {
+        outline-color: #26bdbe;
+    }
 `;
 
 // 채팅 전송 버튼
 export const ChatSendButton = styled.button<{ disabled: boolean }>`
-    color: ${(props) => (props.disabled ? "#cccccc" : "white")};
     border: none;
     padding: 10px;
     cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
     border-radius: 50%;
+    background: #ececec;
 
     svg {
         width: 24px;
