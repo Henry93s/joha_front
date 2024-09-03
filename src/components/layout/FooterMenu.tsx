@@ -8,9 +8,8 @@ import { ReactComponent as Story } from "../../assets/icons/story.svg"; // SVG í
 
 const FooterDiv = styled.div`
     position: fixed;
-    left: 0;
     bottom: 0;
-    width: 100vw;
+    width: 100%;
     max-width: 700px;
     display: flex;
     align-items: center;
@@ -19,7 +18,6 @@ const FooterDiv = styled.div`
     height: 67px;
     border-top: 1px solid #e6e6e6;
     background: #fff;
-    max-width: 700px;
     z-index: 10;
 `;
 
