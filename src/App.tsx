@@ -1,19 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import MainPage from '../src/pages/MainPage';
+import MainPage from "../src/pages/MainPage";
+import InquiryPage from "../src/pages/InquiryPage";
+import LoginPage from "../src/pages/LoginPage";
+import JoinPage from "./pages/JoinPage";
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={<MainPage />}
+                    />
+                    <Route
+                        path="/inquiry"
+                        element={<InquiryPage />}
+                    />
+                    <Route
+                        path="/login"
+                        element={<LoginPage />}
+                    />
+                    <Route
+                        path="/join"
+                        element={<JoinPage />}
+                    />
+                </Routes>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
