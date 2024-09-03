@@ -23,7 +23,7 @@ const ProfileLabel = styled.label`
     cursor: pointer;
 
     &:after {
-        content: "+";
+        content: "${(props) => (props.$hasImage ? "" : "+")}";
         color: white;
         font-size: 36px;
         position: absolute;
@@ -37,6 +37,12 @@ const ProfileInput = styled.input`
     display: none;
 `;
 
+const ProfileImage = styled.img`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+`;
+
 const Input = styled.input`
     width: 100%;
     padding: 0 20px;
@@ -45,7 +51,6 @@ const Input = styled.input`
     border-radius: 15px;
     box-sizing: border-box;
     height: 50px;
-    font: inherit;
 
     &:focus {
         border-color: var(--main-color);
@@ -62,7 +67,6 @@ const Button = styled.button`
     cursor: pointer;
     flex-shrink: 0;
     padding: 0 20px;
-    font: inherit;
 
     &:disabled {
         color: #bbb;
@@ -92,6 +96,7 @@ const Join = () => {
         phone: "",
         address: "",
         detailedAddress: "",
+        profileImage: null,
     });
 
     const [errors, setErrors] = useState({
@@ -100,6 +105,8 @@ const Join = () => {
         passwordCheckError: "",
         phoneError: "",
     });
+
+    const [showMap, setShowMap] = useState(false);
 
     /** 유효성 검사 */
     const validateField = {
@@ -120,6 +127,21 @@ const Join = () => {
         phone: (value) => {
             return PhoneNumberRegex(value) ? "" : "올바른 전화번호 형식이 아닙니다.";
         },
+    };
+
+    // 프로필 사진 변경될때 호출 되는 함수
+    const onChangeProfileHandler = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    profileImage: reader.result,
+                }));
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     // 폼 필드 값이 변경될 때 호출되는 함수
@@ -144,6 +166,24 @@ const Join = () => {
         }
     };
 
+    // 다음 주소 우편번호 서비스 사용(API key 필요 없음)
+    const onClickAddressSearchHandler = () => {
+        const script = document.createElement("script");
+        script.src = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+        script.onload = () => {
+            new window.daum.Postcode({
+                oncomplete: (data) => {
+                    setFormData((prevData) => ({
+                        ...prevData,
+                        address: data.address,
+                    }));
+                    setShowMap(true); // 주소가 입력되면 지도를 표시
+                },
+            }).open();
+        };
+        document.body.appendChild(script);
+    };
+
     // 폼 제출 시 호출되는 함수
     const onSubmitHandler = (e) => {
         e.preventDefault();
@@ -164,7 +204,7 @@ const Join = () => {
         }, true); // 초기 값은 true (모든 필드가 유효하다고 가정)
 
         if (isValid) {
-            // 이곳에 폼 제출 로직을 추가할 수 있습니다 (예: axios.post)
+            // 이곳에 폼 제출 로직 추가 (예: axios.post)
             alert("회원가입 성공");
         }
     };
@@ -173,12 +213,23 @@ const Join = () => {
         <form onSubmit={onSubmitHandler}>
             {/* 프로필 사진 업로드 */}
             <ProfileInputWrapper>
-                <ProfileLabel htmlFor="profile" />
+                <ProfileLabel
+                    htmlFor="profile"
+                    $hasImage={formData.profileImage}
+                >
+                    {formData.profileImage && (
+                        <ProfileImage
+                            src={formData.profileImage}
+                            alt="프로필 미리보기"
+                        />
+                    )}
+                </ProfileLabel>
                 <ProfileInput
                     type="file"
                     id="profile"
                     name="profile"
                     accept="image/*"
+                    onChange={onChangeProfileHandler}
                 />
             </ProfileInputWrapper>
 
@@ -259,7 +310,10 @@ const Join = () => {
                 name="address"
                 placeholder="기본 주소"
                 value={formData.address}
+                onClick={onClickAddressSearchHandler}
                 onChange={onChangeHandler}
+                readOnly
+                required
             />
 
             {/* 상세 주소 필드 */}
@@ -269,6 +323,7 @@ const Join = () => {
                 placeholder="상세 주소"
                 value={formData.detailedAddress}
                 onChange={onChangeHandler}
+                required
             />
 
             {/* 가입하기 버튼 */}
