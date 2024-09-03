@@ -63,7 +63,6 @@ html {
 }
 
 /* 기본 여백을 제거하여 작성된 CSS를 더 잘 제어할 수 있습니다. */
-body,
 h1,
 h2,
 h3,
@@ -74,8 +73,12 @@ blockquote,
 dl,
 dd,
 button {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0 auto;
 }
 
 /* list를 role값으로 갖는 ul, ol 요소의 기본 목록 스타일을 제거합니다. */

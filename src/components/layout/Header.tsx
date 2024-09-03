@@ -13,6 +13,12 @@ const HeaderContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 10;
+
+    // header 다음 div(+ : sibling 선택자)
+    & + div {
+        margin-bottom: 67px;
+    }
 `;
 const Logo = styled(Link)`
     position: absolute;

@@ -6,6 +6,7 @@ import MainPage from "../src/pages/MainPage";
 import InquiryPage from "../src/pages/InquiryPage";
 import LoginPage from "../src/pages/LoginPage";
 import JoinPage from "./pages/JoinPage";
+import SchedulePage from './pages/SchedulePage';
 
 function App() {
     return (
@@ -27,6 +28,10 @@ function App() {
                     <Route
                         path="/join"
                         element={<JoinPage />}
+                    />
+                    <Route
+                        path="/schedule"
+                        element={<SchedulePage />}
                     />
                 </Routes>
             </BrowserRouter>
