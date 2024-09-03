@@ -6,7 +6,7 @@ import MainPage from "../src/pages/MainPage";
 import InquiryPage from "../src/pages/InquiryPage";
 import LoginPage from "../src/pages/LoginPage";
 import JoinPage from "./pages/JoinPage";
-import SchedulePage from './pages/SchedulePage';
+import SchedulePage from "./pages/SchedulePage";
 
 function App() {
     return (

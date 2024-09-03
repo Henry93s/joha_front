@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../components/layout/Header";
 import SubLayout from "../components/layout/SubLayout";
-import Join from "../components/Join";
+import Join from "../components/account/Join";
 
 const JoinPage = () => {
     return (
