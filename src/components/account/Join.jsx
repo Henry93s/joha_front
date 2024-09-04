@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
+import { useNavigate } from "react-router-dom";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -107,6 +108,7 @@ const Join = () => {
     });
 
     const [showMap, setShowMap] = useState(false);
+    const navigate = useNavigate();
 
     /** 유효성 검사 */
     const validateField = {
@@ -205,7 +207,7 @@ const Join = () => {
 
         if (isValid) {
             // 이곳에 폼 제출 로직 추가 (예: axios.post)
-            alert("회원가입 성공");
+            navigate("/joinEnd");
         }
     };
 
