@@ -9,6 +9,7 @@ import JoinPage from "./pages/JoinPage";
 import JoinEndPage from "./pages/JoinEndPage";
 import SchedulePage from "./pages/SchedulePage";
 import FindIdPage from "./pages/FindIdPage";
+import FindPasswordPage from "./pages/FindPasswordPage";
 
 function App() {
     return (
@@ -38,6 +39,10 @@ function App() {
                     <Route
                         path="/findId"
                         element={<FindIdPage />}
+                    />
+                    <Route
+                        path="/findPassword"
+                        element={<FindPasswordPage />}
                     />
                     <Route
                         path="/schedule"
