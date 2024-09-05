@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 const RelativeContainer = styled.div`
   width: 100%;
   max-width: 700px;
-  height: 90vh;
+  height: calc(100vh - (60px + 67px));
   position: relative;
   overflow: hidden;
 `
@@ -20,13 +20,13 @@ const CalendarContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 50%;
-  margin-top: 20px;
+  padding-top: 20px;
 `
  // 달력의 headerRender props 코드 수정으로 기본 스타일을 변경시키는 스타일드 컴포넌트 정의
 const HeaderContainer = styled.div`
   display: flex;
   justify-content: space-around;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
 `
 const CalendarHeader = styled.p`
   font-weight: bold;
@@ -127,7 +127,7 @@ const ModalOverlay = styled.div`
   z-index: 2;
   /* 바깥 스크롤 방지 */
   overflow: hidden;
-  // bottom footer(67px) + calendar margin-top(20px) 만큼 padding 부여
+  // bottom footer(67px) + calendar padding-top(20px) 만큼 padding 부여
   padding-bottom: calc(67px + 20px);
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
   // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
@@ -139,11 +139,12 @@ const MonthSlideContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 50%;
-  border-top: 2px solid #F0F0F2;
+  border-top: 3px solid #F0F0F2;
   background-color: white;
   z-index: 3;
   // bottom footer 높이 만큼 padding 부여해야 모든 일정 확인 가능함
   padding-bottom: 67px;
+
   /* 모달 내부에서만 스크롤 발생 */
   overflow-y: auto;
   // 스크롤은 동작 하나 스크롤바는 출력 하지 않도록 함
@@ -152,7 +153,6 @@ const MonthSlideContainer = styled.div`
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera용 추가 */
   }
-
 
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
   // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
@@ -186,9 +186,17 @@ const ModalContent = styled.div`
   height: 50px;
   font-size: 15px;
   font-weight: 600;
+  background-color: white;
   margin: 0 auto;
-
   cursor: pointer;
+  padding: 0 10px;
+  border-radius: 10px;
+
+  transition: background-color 0.5s ease;
+
+  &:hover{
+    background-color: ${({$type}) => ($type === "error" ? '#ffe0e3' : '#e3e7ff')};
+  }
 `
 const ModalContentTimeDiv = styled.div`
   display: flex;
@@ -466,7 +474,7 @@ const CalendarComponent = () => {
                 Calendar: {
                   /* antd 캘린더 컴포넌트 토큰 정의 */
                   // 선택된 날짜 셀 배경
-                  itemActiveBg: "#b5ebeb",
+                  itemActiveBg: "#c7fafa",
                   // hover된 날짜 셀 배경
                   controlItemBgHover: "#d2fafa",
                   // 선택된 날짜 셀 의 선 색
