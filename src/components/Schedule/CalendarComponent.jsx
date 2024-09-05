@@ -73,10 +73,21 @@ const DateP = styled.p.attrs(props => ({
   padding-right: 3px;
 `;
 
-// 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위한 스타일드 컴포넌트
+// 기본 antd 캘린더 커스터마이징 작업 
 const HiddenDateStyleCalendar = styled.div`
+  // 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위함
   .ant-picker-calendar-date-value {
     display: none;
+  }
+
+  // 캘린더 내부 개별 날짜의 일정이 많을 때 스크롤바 출력 안함
+  .ant-picker-calendar-date-content{
+    // firefox
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera용 추가 */
+    }
   }
 
   // 월이 이동할 때 slide 효과 적용
@@ -114,26 +125,45 @@ const ModalOverlay = styled.div`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.001);  /* 반투명한 회색 배경 */
   z-index: 2;
+  /* 바깥 스크롤 방지 */
   overflow: hidden;
-  margin-bottom: calc(67px + 20px);
+  // bottom footer(67px) + calendar margin-top(20px) 만큼 padding 부여
+  padding-bottom: calc(67px + 20px);
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
-  // => transform과 opacity를 스타일 템플릿 리터럴 내에서 동적으로 설정
+  // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
   transform: ${({$isVisible}) => ($isVisible ? 'translateY(0%)' : 'translateY(100%)')};
-  transition: transform 0.5s ease;
+  transition: all 0.5s ease;
 `;
 // 일자 클릭 시 발생하는 슬라이더 모달 컨테이너
 const MonthSlideContainer = styled.div`
+  position: absolute;
   width: 100%;
   height: 50%;
-  background-color: aqua;
+  border-top: 2px solid #F0F0F2;
+  background-color: white;
   z-index: 3;
+  // bottom footer 높이 만큼 padding 부여해야 모든 일정 확인 가능함
+  padding-bottom: 67px;
+  /* 모달 내부에서만 스크롤 발생 */
+  overflow-y: auto;
+  // 스크롤은 동작 하나 스크롤바는 출력 하지 않도록 함
+  // firefox
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera용 추가 */
+  }
+
 
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
-  // => transform과 opacity를 스타일 템플릿 리터럴 내에서 동적으로 설정
+  // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
   transform: ${({$isVisible}) => ($isVisible ? 'translateY(110%)' : 'translateY(200%)')};
   transition: transform 1s ease;
 `
 const ModalCloseDiv = styled.div`
+  // modal 상단 div 고정
+  position: sticky;
+  top: 0;
+  background-color: white;
   display: flex;
   justify-content: end;
   height: 30px;
@@ -150,11 +180,40 @@ const CloseButton = styled.button`
 `
 const ModalContent = styled.div`
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 10px;
   width: 95%;
   height: 50px;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0 auto;
-  background-color: red;
+
+  cursor: pointer;
+`
+const ModalContentTimeDiv = styled.div`
+  display: flex;
+  align-items: center;
+  width: 55px;
+`
+// 일정 badge type 에 따른 구분 컴포넌트( error(공휴일 : red), my(작성한 일정(우선순위) : blue) )
+const ScheduleLine = styled.div`
+  width: 2px;
+  height: 35px;
+  border-right: ${({$type}) => ($type === "error" ? '2px solid #FE5054' : '2px solid #ADB4E0')};
+`
+const DetailSchedule = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+`
+const DetailScheduleText = styled.p`
+  font-size: 14px;
+`
+const DetailScheduleTime = styled.p`
+  font-size: 12px;
+  color: #BBBBBB;
 `
 
 
@@ -210,6 +269,12 @@ const CalendarComponent = () => {
   // slide 모달 창 display 상태 정의
   const [isVisible, setIsVisible] = useState(false);
 
+  // 날짜 상태 관리
+  const [selectedDate, setSelectedDate] = useState(dayjs()); // 선택한 날짜 상태 관리
+
+  // 날짜 셀에서 일정 뱃지 컬러 중복 방지를 위한 상태 정의
+  const [isPrinted, setIsprinted] = useState(false);
+
   // 창 상태에 따른 pc 모바일 화면 보기 자동 전환
   useEffect(() => {
     const handleResize = () => {
@@ -232,19 +297,34 @@ const CalendarComponent = () => {
     if (holiday) {
       newListData.push({
         type: 'error', // 공휴일 스타일을 'error'로 설정 => 빨간색
+        color: '#FE5054',
         content: holiday,
+        timeStart: "Allday",
+        time: "Allday"
       });
     }
     // 매년 변하는 추석, 설날 공휴일을 list 에 포함 (lunar-javascript 라이브러리)
     if (lunarHoliday) {
       newListData.push({
         type: 'error', // 명절 스타일을 'error'로 설정 => 빨간색
+        color: '#FE5054',
         content: lunarHoliday,
+        timeStart: "Allday",
+        time: "Allday"
       });
     }
 
     // 추가적인 이벤트 데이터 load api
     // ...
+    for(var i = 0; i < 20; i++){
+      newListData.push({
+        type: 'my',
+        color: '#ADB4E0',
+        content: "test" + i,
+        timeStart: "8:00",
+        time: "8:00 ~ 10:00"
+      })
+    }
 
     return newListData;
   };
@@ -252,6 +332,7 @@ const CalendarComponent = () => {
   // 각 셀에 맞는 렌더링 방식을 결정하는 함수
   const cellRender = useCallback((current) => {
     const listData = getListData(current);
+
     // 토요일 또는 공휴일(일욜 포함) 여부를 파악하여 글씨 색 변경 스타일 컴포넌트를 적용하기 위함
     const isSaturday = current.day() === 6;
     const isHoliday = listData.some(item => item.type === 'error') || current.day() === 0;
@@ -269,6 +350,14 @@ const CalendarComponent = () => {
       }
     }
 
+    // (mobile) 모바일일 때에는 공휴일 또는 일정을 화면 미관 상 최대 1개 뱃지만 출력되도록 하도록 하는 중복 색상 필터링
+    const uniqueListData = listData.reduce((acc, currentItem) => {
+      if (!acc.find((item) => item.color === currentItem.color)) {
+        acc.push(currentItem);
+      }
+      return acc;
+    }, []);
+
     return (
       <div onClick={onClickDate}>
         <DateP $isHoliday={isHoliday} $isSaturday={isSaturday && !isHoliday} $isNotNowMonth={isNotNowMonth}>
@@ -276,18 +365,47 @@ const CalendarComponent = () => {
         </DateP>
         
         <Events>
-            {listData.map((item, index) => (
-              <li key={`${item.content} - ${index}`} > 
-                <Badge status={item.type} text={isFullScreen ? item.content : ''} />
-              </li>
-            ))}
+            {isFullScreen &&
+              listData.map((item, index) => (
+              <div key={`${item.content} - ${index}`}> 
+                <Badge color={item.color} text={item.content} />
+              </div>
+            ))
+            ||
+              uniqueListData.map((item, index) => (
+              <div key={`${item.content} - ${index}`}> 
+                <Badge color={item.color} />
+              </div>
+            ))
+          }
         </Events>
       </div>
     )
   }, [months]);
 
+    // 일정 스케쥴 render
+    const contentRender = () => {
+      const listData = getListData(selectedDate);
+
+      return (
+        <>
+          {listData.map((item, index) => (
+            <ModalContent key={index} $type={item.type}>
+              <ModalContentTimeDiv>{item.timeStart}</ModalContentTimeDiv>
+              <ScheduleLine $type={item.type} />
+              <DetailSchedule>
+                <DetailScheduleText>{item.content}</DetailScheduleText>
+                <DetailScheduleTime>{item.time}</DetailScheduleTime>
+              </DetailSchedule>
+            </ModalContent>
+          ))}
+        </>
+      )
+    }
+
   // 월을 변경하는 핸들러 함수들
   const onChangeMonthPrev = (current, onChange) => {
+    // dayjs 라이브러리는 기본적으로 불변(immutable)이기 때문에, 객체의 값을 직접 수정하는 대신, 기존 객체를 복사한 후 변경 사항을 적용
     const newValue = current.clone().subtract(1, 'month');
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
@@ -303,6 +421,7 @@ const CalendarComponent = () => {
   };
 
   const onChangeMonthNext = (current, onChange) => {
+    // dayjs 라이브러리는 기본적으로 불변(immutable)이기 때문에, 객체의 값을 직접 수정하는 대신, 기존 객체를 복사한 후 변경 사항을 적용
     const newValue = current.clone().add(1, 'month');
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
@@ -317,6 +436,11 @@ const CalendarComponent = () => {
     }, 300);
   };
 
+  // 날짜 클릭 시 호출되는 함수
+  const onDateSelect = (date) => {
+    setSelectedDate(date); // 클릭한 날짜로 상태 변경
+  };
+
   // 모달 close
   const onClickCloseModal = () => {
     setIsVisible(!isVisible);
@@ -325,24 +449,6 @@ const CalendarComponent = () => {
     if(e.target.id === 'overlay'){
       setIsVisible(false);
     }
-  }
-
-  // 일정 스케쥴 render
-  const contentRender = () => {
-    const current = dayjs();
-    const listData = getListData(current);
-    console.log(listData)
-    
-    return (
-      <>
-        {listData.map((item, index) => (
-          <ModalContent key={index} > 
-            {item.type}
-            {isFullScreen ? item.content : ''}
-          </ModalContent>
-        ))}
-      </>
-    )
   }
 
   return (
@@ -375,7 +481,8 @@ const CalendarComponent = () => {
             }}
           >
             <HiddenDateStyleCalendar $slideDirection={slideDirection}>
-              <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen} 
+              <Calendar cellRender={cellRender} locale={locale} 
+                        onSelect={onDateSelect} // 날짜 선택 이벤트
               
               // headerRender props 코드 수정으로 기본 스타일을 변경시킴
               headerRender={({ value, onChange }) => {
