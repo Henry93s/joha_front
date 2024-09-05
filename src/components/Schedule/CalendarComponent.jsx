@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 // pc 일 때는 하단 공백에 일정 리스트를 출력할 것임
 // 모바일일 때는 일정 클릭 시 아래에서 올라오는 슬라이드 모달로 일정 리스트를 출력할 것임
 const RelativeContainer = styled.div`
+  width: 100%;
   max-width: 700px;
   height: 90vh;
   position: relative;
@@ -40,6 +41,7 @@ const CalendarHeaderControl = styled.button`
   cursor: pointer;
   transition: color 0.5s;
   z-index: 1;
+  
 
   &:hover {
     color: #000;
@@ -99,7 +101,7 @@ const HiddenDateStyleCalendar = styled.div`
     
     animation: ${({ $slideDirection }) => 
       $slideDirection === "right" ? "slide-right" : 
-      $slideDirection === "left" ? "slide-left" : "none"} 0.5s ease-in-out;
+      $slideDirection === "left" ? "slide-left" : "none"} 0.25s ease-in-out;
   }
 `;
 
@@ -202,6 +204,8 @@ const CalendarComponent = () => {
   
   // 달력 slide 적용
   const [slideDirection, setslideDirection] = useState(null);
+  // slide 동작 중 월 방향키 클릭 동작 x
+  const [slideDisable, setSlideDisable] = useState(false);
 
   // slide 모달 창 display 상태 정의
   const [isVisible, setIsVisible] = useState(false);
@@ -290,10 +294,12 @@ const CalendarComponent = () => {
     setMonths(newValue.startOf('month'));
     // 달력 slide 적용
     setslideDirection('left');
+    setSlideDisable(true);
     setTimeout(() => {
-      // 애니메이션 0.5s 에 맞춰서 timeout 적용
+      // slide 애니메이션 중 변경 x, 및 left direction 해제
       setslideDirection(null);
-    }, 500);
+      setSlideDisable(false);
+    }, 250);
   };
 
   const onChangeMonthNext = (current, onChange) => {
@@ -303,9 +309,12 @@ const CalendarComponent = () => {
     setMonths(newValue.startOf('month'));
     // 달력 slide 적용
     setslideDirection('right');
+    setSlideDisable(true);
     setTimeout(() => {
+      // slide 애니메이션 중 변경 x, 및 left direction 해제
       setslideDirection(null);
-    }, 500);
+      setSlideDisable(false);
+    }, 300);
   };
 
   // 모달 close
@@ -374,11 +383,11 @@ const CalendarComponent = () => {
                   const month = value.month();
                   return (
                     <HeaderContainer>
-                      <CalendarHeaderControl onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
+                      <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
                         <CalendarHeader>
                           {year}년 {month + 1}월
                         </CalendarHeader>
-                      <CalendarHeaderControl onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
+                      <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
                     </HeaderContainer>
                   );
                 }}
