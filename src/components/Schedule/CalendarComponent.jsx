@@ -1,5 +1,5 @@
 import styled, { keyframes, css } from "styled-components";
-import React, { Children, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Children, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Badge, Calendar, ConfigProvider } from 'antd';
 import 'dayjs/locale/ko';
 // antd 라이브러리 Calendar 에서 locale 속성을 import 하여 월, 요일 표시를 한국어로 변경하기 위함
@@ -72,9 +72,34 @@ const DateP = styled.p.attrs(props => ({
 `;
 
 // 기본 antd 캘린더의 date 숫자는 숨기고 직접 커스터마이징한 date 숫자를 보이기 위한 스타일드 컴포넌트
-const HiddenDateStyle = styled.div`
+const HiddenDateStyleCalendar = styled.div`
   .ant-picker-calendar-date-value {
     display: none;
+  }
+
+  // 월이 이동할 때 slide 효과 적용
+  .ant-picker-body {
+    @keyframes slide-right {
+      from {
+        transform: translateX(100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slide-left {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(0%);
+      }
+    }
+    
+    animation: ${({ $slideDirection }) => 
+      $slideDirection === "right" ? "slide-right" : 
+      $slideDirection === "left" ? "slide-left" : "none"} 0.5s ease-in-out;
   }
 `;
 
@@ -173,11 +198,15 @@ const CalendarComponent = () => {
   const [isFullScreen, setIsFullScreen] = useState(window.innerWidth >= 1000);
 
   // N 월 state 정의
-  const [months, setMonths] = useState(dayjs().month() + 1);
+  const [months, setMonths] = useState(dayjs().startOf('month'));
+  
+  // 달력 slide 적용
+  const [slideDirection, setslideDirection] = useState(null);
 
   // slide 모달 창 display 상태 정의
   const [isVisible, setIsVisible] = useState(false);
 
+  // 창 상태에 따른 pc 모바일 화면 보기 자동 전환
   useEffect(() => {
     const handleResize = () => {
       setIsFullScreen(window.innerWidth >= 1000);
@@ -258,14 +287,25 @@ const CalendarComponent = () => {
     const newValue = current.clone().subtract(1, 'month');
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
-    setMonths(newValue);
+    setMonths(newValue.startOf('month'));
+    // 달력 slide 적용
+    setslideDirection('left');
+    setTimeout(() => {
+      // 애니메이션 0.5s 에 맞춰서 timeout 적용
+      setslideDirection(null);
+    }, 500);
   };
 
   const onChangeMonthNext = (current, onChange) => {
     const newValue = current.clone().add(1, 'month');
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
-    setMonths(newValue);
+    setMonths(newValue.startOf('month'));
+    // 달력 slide 적용
+    setslideDirection('right');
+    setTimeout(() => {
+      setslideDirection(null);
+    }, 500);
   };
 
   // 모달 close
@@ -325,7 +365,7 @@ const CalendarComponent = () => {
               },
             }}
           >
-            <HiddenDateStyle>
+            <HiddenDateStyleCalendar $slideDirection={slideDirection}>
               <Calendar cellRender={cellRender} locale={locale} fullscreen={isFullScreen} 
               
               // headerRender props 코드 수정으로 기본 스타일을 변경시킴
@@ -343,7 +383,8 @@ const CalendarComponent = () => {
                   );
                 }}
               />
-            </HiddenDateStyle>
+              
+            </HiddenDateStyleCalendar>
           </ConfigProvider>
         </CalendarContainer>
         <ModalOverlay id="overlay" $isVisible={isVisible} onClick={onClickModalOutside}>
