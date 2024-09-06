@@ -59,7 +59,7 @@ const dataArr = [
 
 const Story = () => {
   return (
-    <>
+    <div>
       <Titlebox>
         <Title>JOHA Story</Title>
         <StorySelect
@@ -81,7 +81,7 @@ const Story = () => {
           );
         })}
       </Container>
-    </>
+    </div>
   );
 };
 
