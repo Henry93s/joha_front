@@ -18,6 +18,7 @@ const SlideImg = styled.div`
     width: 100%;
   }
   height: 45vw;
+  max-height: 300px;
   background: #d9d9d9;
   border-radius: 15px;
 `;
