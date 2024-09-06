@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -107,7 +108,23 @@ const Join = () => {
         phoneError: "",
     });
 
-    const [showMap, setShowMap] = useState(false);
+    // 임시 테스트용
+    const [isEmailCode, setIsEmailCode] = useState(false); // 이메일 인증 요청
+    const [isCodeCheck, setIsCodeCheck] = useState(false); // 인증 확인
+
+    const onClickEmailCodHandler = () => {
+        setIsEmailCode(true);
+        setTimeout(() => {
+            alert("인증 코드 전송");
+            setIsEmailCode(false);
+        }, 2000);
+    };
+
+    const onClickCodeCheck = () => {
+        setIsCodeCheck(true);
+        alert("인증 확인 완료");
+    };
+
     const navigate = useNavigate();
 
     /** 유효성 검사 */
@@ -135,14 +152,10 @@ const Join = () => {
     const onChangeProfileHandler = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setFormData((prevData) => ({
-                    ...prevData,
-                    profileImage: reader.result,
-                }));
-            };
-            reader.readAsDataURL(file);
+            setFormData((prevData) => ({
+                ...prevData,
+                profileImage: file, // 파일 자체를 저장
+            }));
         }
     };
 
@@ -179,7 +192,6 @@ const Join = () => {
                         ...prevData,
                         address: data.address,
                     }));
-                    setShowMap(true); // 주소가 입력되면 지도를 표시
                 },
             }).open();
         };
@@ -187,7 +199,7 @@ const Join = () => {
     };
 
     // 폼 제출 시 호출되는 함수
-    const onSubmitHandler = (e) => {
+    const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         // 모든 필드 유효성 검사
@@ -206,8 +218,34 @@ const Join = () => {
         }, true); // 초기 값은 true (모든 필드가 유효하다고 가정)
 
         if (isValid) {
-            // 이곳에 폼 제출 로직 추가 (예: axios.post)
-            navigate("/joinEnd");
+            try {
+                // FormData 객체를 사용하여 데이터 전송
+                const formDataSend = new FormData();
+                formDataSend.append("email", formData.email);
+                formDataSend.append("name", formData.name);
+                formDataSend.append("password", formData.password);
+                formDataSend.append("phone", formData.phone);
+                formDataSend.append("base_address", formData.address);
+                formDataSend.append("detail_address", formData.detailedAddress);
+
+                // 프로필 이미지가 있을 경우에만 추가
+                if (formData.profileImage) {
+                    formDataSend.append("photo", formData.profileImage);
+                }
+
+                // axios로 FormData 전송
+                const response = await axios.post("http://localhost:3002/users", formDataSend, {
+                    headers: { "Content-Type": "multipart/form-data" },
+                });
+
+                if (response.status === 201) {
+                    alert("회원가입 성공");
+                    navigate("/joinEnd");
+                }
+            } catch (error) {
+                console.error("회원가입 실패", error);
+                alert("회원가입 실패");
+            }
         }
     };
 
@@ -221,7 +259,7 @@ const Join = () => {
                 >
                     {formData.profileImage && (
                         <ProfileImage
-                            src={formData.profileImage}
+                            src={URL.createObjectURL(formData.profileImage)} // 이미지 미리보기
                             alt="프로필 미리보기"
                         />
                     )}
@@ -245,7 +283,13 @@ const Join = () => {
                     onChange={onChangeHandler}
                     required
                 />
-                <Button type="button">인증요청</Button>
+                <Button
+                    type="button"
+                    onClick={onClickEmailCodHandler}
+                    disabled={isEmailCode}
+                >
+                    인증요청
+                </Button>
             </FlexDiv>
             <ErrorMessage>{errors.emailError}</ErrorMessage>
 
@@ -259,7 +303,13 @@ const Join = () => {
                     onChange={onChangeHandler}
                     required
                 />
-                <Button type="button">인증확인</Button>
+                <Button
+                    type="button"
+                    onClick={onClickCodeCheck}
+                    disabled={isCodeCheck}
+                >
+                    인증확인
+                </Button>
             </FlexDiv>
 
             {/* 이름 필드 */}
@@ -313,7 +363,6 @@ const Join = () => {
                 placeholder="기본 주소"
                 value={formData.address}
                 onClick={onClickAddressSearchHandler}
-                onChange={onChangeHandler}
                 readOnly
                 required
             />
