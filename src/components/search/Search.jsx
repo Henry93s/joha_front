@@ -6,7 +6,7 @@ import { ReactComponent as Close } from "../../assets/icons/close.svg"; // SVG �
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg"; // SVG 파일을 컴포넌트로 import
 
 const Container = styled.div`
-  padding: 0 15px;
+  padding: 10px 15px 0;
 `;
 const SearchCont = styled.div`
   display: flex;
@@ -167,8 +167,10 @@ const Search = () => {
             {searchArray.map((word, idx) => {
               return (
                 <li key={`keyword${idx}`}>
-                  <Link to={word}>
-                    {word}{" "}
+                  <Link
+                    to={`/lesson_search?keyword=${encodeURIComponent(word)}`}
+                  >
+                    {word}
                     <StyledClose onClick={(e) => handleDelete(e, word)} />
                   </Link>
                 </li>

@@ -9,10 +9,13 @@ const MainPage = () => {
   return (
     <>
       <Header />
-      <FindLesson />
-      <CommingLesson />
-      <TopLesson />
-      <Story />
+      <div>
+        <FindLesson />
+        <CommingLesson />
+        <TopLesson />
+        <Story />
+      </div>
+
       <FooterMenu />
     </>
   );

@@ -11,6 +11,7 @@ const ItemBox = styled(Link)`
 `;
 const ImgBox = styled.div`
   height: 29vw;
+  max-height: 240px;
   overflow: hidden;
   & image {
     width: 100%;
