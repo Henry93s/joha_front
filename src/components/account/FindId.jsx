@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const LoginInput = styled.input`
     & + input {
@@ -70,15 +71,23 @@ const FindId = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [userId, setUserId] = useState("");
 
+    // 아이디 찾기 확인 핸들러
     const onSubmitHandle = async (e) => {
         e.preventDefault();
 
-        // 가짜 응답 설정
-        setTimeout(() => {
-            // 여기서 "gainedUserId"는 가짜로 얻은 사용자 아이디입니다.
-            const gainedUserId = "test@test.com";
-            setUserId(gainedUserId);
-        }, 1000); // 1초 후 가짜 응답 처리
+        try {
+            const response = await axios.post("http://localhost:3002/users/findId", {
+                name,
+                phone: phoneNumber,
+            });
+
+            if (response.status === 200) {
+                setUserId(response.data.email); // 성공 시 받은 이메일 화면에 표시
+            }
+        } catch (error) {
+            console.error("아이디 찾기 실패", error);
+            alert("사용자를 찾을 수 없습니다.");
+        }
     };
 
     const phoneNumberChangeHandler = (e) => {

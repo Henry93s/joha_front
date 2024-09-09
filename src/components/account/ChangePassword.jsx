@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const ChangeInput = styled.input`
     border: 1px solid #ddd;
@@ -71,7 +72,8 @@ const ChangePassword = () => {
         return "";
     };
 
-    const onSubmitHandler = (e) => {
+    // 비밀번호 변경하기 핸들러
+    const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         const { password, passwordCheck } = userInfo;
@@ -86,11 +88,19 @@ const ChangePassword = () => {
             return;
         }
 
-        // 테스트용 가짜 응답 처리
-        setTimeout(() => {
-            alert(`비밀번호가 성공적으로 변경되었습니다. (이메일: ${location.state.email})`);
-            navigate("/login");
-        }, 1000);
+        try {
+            const response = await axios.post("http://localhost:3002/users/resetpassword", {
+                email: location.state.email,
+                newPassword: password,
+            });
+
+            if (response.status === 200) {
+                alert("비밀번호가 성공적으로 변경되었습니다.");
+                navigate("/login");
+            }
+        } catch (error) {
+            console.error("비밀번호 변경 실패", error);
+        }
     };
 
     const onChangeHandler = (e) => {
@@ -122,7 +132,8 @@ const ChangePassword = () => {
             {/* 이메일 필드 (읽기 전용) */}
             <ChangeInput
                 type="email"
-                value={location.state.email ? location.state.email : ""}
+                // value={location.state.email ? location.state.email : ""} // 정상 코드
+                value={location.state?.email || ""} // 임시 코드(백엔드 정상 연결시 삭제)
                 readOnly
             />
 
