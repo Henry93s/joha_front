@@ -116,7 +116,6 @@ const HiddenDateStyleCalendar = styled.div`
   }
 `;
 
-
 // 모달을 덮는 Overlay 스타일
 const ModalOverlay = styled.div`
   position: absolute;
@@ -279,9 +278,6 @@ const CalendarComponent = () => {
 
   // 날짜 상태 관리
   const [selectedDate, setSelectedDate] = useState(dayjs()); // 선택한 날짜 상태 관리
-
-  // 날짜 셀에서 일정 뱃지 컬러 중복 방지를 위한 상태 정의
-  const [isPrinted, setIsprinted] = useState(false);
 
   // 창 상태에 따른 pc 모바일 화면 보기 자동 전환
   useEffect(() => {
