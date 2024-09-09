@@ -1,17 +1,17 @@
 import React from "react";
 import Header from "../components/layout/Header";
 import SubLayout from "../components/layout/SubLayout";
-import Join from "../components/account/Join";
+import FindId from "../components/account/FindId";
 
-const JoinPage = () => {
+const FindIdPage = () => {
     return (
         <>
             <Header />
-            <SubLayout pageTitle="회원가입">
-                <Join />
+            <SubLayout pageTitle="아이디 찾기">
+                <FindId />
             </SubLayout>
         </>
     );
 };
 
-export default JoinPage;
+export default FindIdPage;

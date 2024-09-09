@@ -13,8 +13,8 @@ import {
     ChatInput,
     ChatSendButton,
 } from "./InquiryStyles"; // 스타일 컴포넌트들을 import
-import { ReactComponent as Enter } from "../assets/icons/enter.svg";
-import { ReactComponent as Manager } from "../assets/icons/manager.svg";
+import { ReactComponent as Enter } from "../../assets/icons/enter.svg";
+import { ReactComponent as Manager } from "../../assets/icons/manager.svg";
 
 // type - 각 메시지는 텍스트, 사용자 여부, 운영자 아이콘 표시 여부 등을 포함합니다.
 interface Message {
@@ -117,7 +117,10 @@ const Inquiry = () => {
             <ChatContainer>
                 {/* 초기 메시지 표시 */}
                 {initialMessages.map((msg, index) => (
-                    <ChatWrapper key={index} $isUser={msg.isUser}>
+                    <ChatWrapper
+                        key={index}
+                        $isUser={msg.isUser}
+                    >
                         {!msg.isUser && msg.showManager && (
                             <IconWrapper>
                                 <Manager />
@@ -131,13 +134,22 @@ const Inquiry = () => {
 
                 {/* 버튼으로 메시지 추가 */}
                 <QnAButtonContainer>
-                    <QnAButton $isActive={clickedButtonIndex === 0} onClick={() => handleQuestionClick(0)}>
+                    <QnAButton
+                        $isActive={clickedButtonIndex === 0}
+                        onClick={() => handleQuestionClick(0)}
+                    >
                         !? 자주 묻는 질문
                     </QnAButton>
-                    <QnAButton $isActive={clickedButtonIndex === 1} onClick={() => handleQuestionClick(1)}>
+                    <QnAButton
+                        $isActive={clickedButtonIndex === 1}
+                        onClick={() => handleQuestionClick(1)}
+                    >
                         환불 / 취소 정책
                     </QnAButton>
-                    <QnAButton $isActive={clickedButtonIndex === 2} onClick={() => handleQuestionClick(2)}>
+                    <QnAButton
+                        $isActive={clickedButtonIndex === 2}
+                        onClick={() => handleQuestionClick(2)}
+                    >
                         수업 날짜 변경
                     </QnAButton>
                 </QnAButtonContainer>
@@ -159,10 +171,16 @@ const Inquiry = () => {
                             <>
                                 {index === messages.length - 1 && (
                                     <FollowUpButtonContainer>
-                                        <QnAButton $isActive={false} onClick={handleReset}>
+                                        <QnAButton
+                                            $isActive={false}
+                                            onClick={handleReset}
+                                        >
                                             처음으로 돌아가기
                                         </QnAButton>
-                                        <QnAButton $isActive={false} onClick={activateChat}>
+                                        <QnAButton
+                                            $isActive={false}
+                                            onClick={activateChat}
+                                        >
                                             운영자와 직접 대화하기
                                         </QnAButton>
                                     </FollowUpButtonContainer>

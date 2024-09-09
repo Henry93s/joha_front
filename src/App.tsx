@@ -6,7 +6,11 @@ import MainPage from "../src/pages/MainPage";
 import InquiryPage from "../src/pages/InquiryPage";
 import LoginPage from "../src/pages/LoginPage";
 import JoinPage from "./pages/JoinPage";
-import SchedulePage from './pages/SchedulePage';
+import JoinEndPage from "./pages/JoinEndPage";
+import SchedulePage from "./pages/SchedulePage";
+import FindIdPage from "./pages/FindIdPage";
+import FindPasswordPage from "./pages/FindPasswordPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 
 function App() {
     return (
@@ -28,6 +32,22 @@ function App() {
                     <Route
                         path="/join"
                         element={<JoinPage />}
+                    />
+                    <Route
+                        path="/joinEnd"
+                        element={<JoinEndPage />}
+                    />
+                    <Route
+                        path="/findId"
+                        element={<FindIdPage />}
+                    />
+                    <Route
+                        path="/findPassword"
+                        element={<FindPasswordPage />}
+                    />
+                    <Route
+                        path="/ChangePassword"
+                        element={<ChangePasswordPage />}
                     />
                     <Route
                         path="/schedule"

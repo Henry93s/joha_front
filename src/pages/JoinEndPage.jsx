@@ -1,17 +1,17 @@
 import React from "react";
 import Header from "../components/layout/Header";
 import SubLayout from "../components/layout/SubLayout";
-import Join from "../components/account/Join";
+import JoinEnd from "../components/account/JoinEnd";
 
-const JoinPage = () => {
+const JoinEndPage = () => {
     return (
         <>
             <Header />
-            <SubLayout pageTitle="회원가입">
-                <Join />
+            <SubLayout pageTitle="회원가입 완료">
+                <JoinEnd />
             </SubLayout>
         </>
     );
 };
 
-export default JoinPage;
+export default JoinEndPage;

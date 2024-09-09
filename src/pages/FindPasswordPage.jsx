@@ -1,17 +1,17 @@
 import React from "react";
 import Header from "../components/layout/Header";
 import SubLayout from "../components/layout/SubLayout";
-import Join from "../components/account/Join";
+import FindPassword from "../components/account/FindPassword";
 
-const JoinPage = () => {
+const FindPasswordPage = () => {
     return (
         <>
             <Header />
-            <SubLayout pageTitle="회원가입">
-                <Join />
+            <SubLayout pageTitle="비밀번호 찾기">
+                <FindPassword />
             </SubLayout>
         </>
     );
 };
 
-export default JoinPage;
+export default FindPasswordPage;

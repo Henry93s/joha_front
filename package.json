@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.3.0",
     "antd": "^5.20.3",
     "antd-style": "^3.6.2",
+    "axios": "^1.7.7",
     "buffer": "^6.0.3",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.13",
