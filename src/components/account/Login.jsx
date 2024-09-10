@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -47,15 +47,19 @@ const JoinBox = styled.div`
 `;
 
 const Login = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
     // 로그인 요청 핸들러
-    const onSubmitHandler = async (e: FormEvent<HTMLFormElement>) => {
+    const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일:", email);
+            console.log("비밀번호:", password);
+
             const response = await axios.post("http://localhost:3002/login", {
                 email: email,
                 password: password,

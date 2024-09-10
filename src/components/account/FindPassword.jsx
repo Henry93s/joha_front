@@ -98,6 +98,9 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일 입력", email);
+
             const response = await axios.post("http://localhost:3002//users/verify/findpw", { email });
             if (response.status === 200) {
                 alert("인증 코드가 전송되었습니다.");
@@ -115,6 +118,10 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일 입력", email);
+            console.log("인증 코드 입력", code);
+
             const response = await axios.post("http://localhost:3002/users/verify/confirm", { email, code });
             if (response.status === 200) {
                 navigate("/reset-password", { state: { email } });

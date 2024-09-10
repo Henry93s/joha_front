@@ -76,6 +76,10 @@ const FindId = () => {
         e.preventDefault();
 
         try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이름", name);
+            console.log("핸드폰번호", phoneNumber);
+
             const response = await axios.post("http://localhost:3002/users/findId", {
                 name,
                 phone: phoneNumber,

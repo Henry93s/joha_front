@@ -89,8 +89,14 @@ const ChangePassword = () => {
         }
 
         try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            const email = location.state?.email || "test@example.com"; // 임시 추후 삭제
+            console.log("이메일:", email);
+            console.log("비밀번호:", userInfo.password);
+
             const response = await axios.post("http://localhost:3002/users/resetpassword", {
-                email: location.state.email,
+                // email: location.state.email,
+                email: email, // 임시 이메일 추후 삭제
                 newPassword: password,
             });
 
@@ -133,7 +139,7 @@ const ChangePassword = () => {
             <ChangeInput
                 type="email"
                 // value={location.state.email ? location.state.email : ""} // 정상 코드
-                value={location.state?.email || ""} // 임시 코드(백엔드 정상 연결시 삭제)
+                value="test@test.com" // 임시 이메일(백엔드 정상 연결시 삭제)
                 readOnly
             />
 
