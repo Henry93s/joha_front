@@ -28,8 +28,6 @@ const ListSlideContainer = styled.div`
   border-top: 3px solid #F0F0F2;
   background-color: white;
   z-index: 3;
-  // modalclosediv(fixed) height 만큼 padding 부여
-  padding-top: 30px;
   // bottom footer 높이 만큼 padding 부여해야 모든 일정 확인 가능함
   padding-bottom: 67px;
 
@@ -49,7 +47,7 @@ const ListSlideContainer = styled.div`
 `
 const ModalCloseDiv = styled.div`
   // modal 상단 div 고정
-  position: fixed;
+  position: sticky;
   top: 0;
   width: 100%;
   background-color: white;
