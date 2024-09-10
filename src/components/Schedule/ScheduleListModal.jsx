@@ -1,5 +1,7 @@
 import styled, { keyframes, css } from "styled-components";
 import { getScheduleListData } from "../../api/getScheduleListData";
+import { useState } from "react";
+import ScheduleDetailModal from "./ScheduleDetailModal";
 
 // 모달을 덮는 Overlay 스타일
 const ModalOverlay = styled.div`
@@ -19,7 +21,7 @@ const ModalOverlay = styled.div`
   transition: ${({$isVisible}) => ($isVisible ? 'all 0.5s ease' : 'all 1.5s ease')};
 `;
 // 일자 클릭 시 발생하는 슬라이더 모달 컨테이너
-const MonthSlideContainer = styled.div`
+const ListSlideContainer = styled.div`
   position: absolute;
   width: 100%;
   height: 50%;
@@ -108,25 +110,45 @@ const DetailScheduleTime = styled.p`
   color: #BBBBBB;
 `
 
+
 // 함수 컴포넌트에서 props를 사용할 때는 객체로 전달되기 때문에, 매개변수를 구조 분해 할당 방식으로 받아야 함 !
 const ScheduleListModal = ({selectedDate, isVisible, setIsVisible}) => {
+    // 해당 날짜 일정 list 중 특정 스케쥴 선택 여부 상태 정의
+    const [isDetail, setIsDetail] = useState(false);
+
+    // 특정 일정 중 특정 detail 스케쥴 상태 정의
+    const [detailData, setDetailData] = useState({
+        type: 'null', // 공휴일 스타일을 'error'로 설정 => 빨간색
+        color: 'null',
+        content: 'null',
+        timeStart: 'null',
+        time: 'null'
+    });
+
     // 일정 스케쥴 render
     const contentRender = (value) => {
         const listData = getScheduleListData(value);
 
+        // 날짜 일정 list 중 특정 스케줄 선택 시
+        const onClickDetailContent = (item) => {
+            setIsDetail(!isDetail);
+            // item 을 특정 detail 스케쥴 상태로 set
+            setDetailData(item);
+        };
+
         return (
-        <>
-            {listData.map((item, index) => (
-            <ModalContent key={index} $type={item.type}>
-                <ModalContentTimeDiv>{item.timeStart}</ModalContentTimeDiv>
-                <ScheduleLine $type={item.type} />
-                <DetailSchedule>
-                <DetailScheduleText>{item.content}</DetailScheduleText>
-                <DetailScheduleTime>{item.time}</DetailScheduleTime>
-                </DetailSchedule>
-            </ModalContent>
-            ))}
-        </>
+            <>
+                {listData.map((item, index) => (
+                <ModalContent key={index} $type={item.type} onClick={() => onClickDetailContent(item)}>
+                    <ModalContentTimeDiv>{item.timeStart}</ModalContentTimeDiv>
+                    <ScheduleLine $type={item.type} />
+                    <DetailSchedule>
+                        <DetailScheduleText>{item.content}</DetailScheduleText>
+                        <DetailScheduleTime>{item.time}</DetailScheduleTime>
+                    </DetailSchedule>
+                </ModalContent>
+                ))}
+            </>
         )
     }
 
@@ -134,20 +156,24 @@ const ScheduleListModal = ({selectedDate, isVisible, setIsVisible}) => {
     const onClickCloseModal = () => {
         setIsVisible(!isVisible);
     }
+
+    // x 버튼 및 모달 창 외 영역 클릭시 전체 모달 close
     const onClickModalOutside = (e) => {
         if(e.target.id === 'overlay'){
-        setIsVisible(false);
+            setIsVisible(false);
+            setIsDetail(false);
         }
     }
 
     return (
         <ModalOverlay id="overlay" $isVisible={isVisible} onClick={onClickModalOutside}>
-            <MonthSlideContainer $isVisible={isVisible}>
+            <ListSlideContainer $isVisible={isVisible}>
                 <ModalCloseDiv>
-                <CloseButton onClick={onClickCloseModal}>X</CloseButton>
+                    <CloseButton onClick={onClickCloseModal}>X</CloseButton>
                 </ModalCloseDiv>
                 {contentRender(selectedDate)}   
-            </MonthSlideContainer>
+            </ListSlideContainer>
+            <ScheduleDetailModal detailData={detailData} isDetail={isDetail} setIsDetail={setIsDetail} />
         </ModalOverlay>
     )
 }
