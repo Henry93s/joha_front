@@ -28,6 +28,8 @@ const ListSlideContainer = styled.div`
   border-top: 3px solid #F0F0F2;
   background-color: white;
   z-index: 3;
+  // modalclosediv(fixed) height 만큼 padding 부여
+  padding-top: 30px;
   // bottom footer 높이 만큼 padding 부여해야 모든 일정 확인 가능함
   padding-bottom: 67px;
 
@@ -42,13 +44,14 @@ const ListSlideContainer = styled.div`
 
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
   // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
-  transform: ${({$isVisible}) => ($isVisible ? 'translateY(110%)' : 'translateY(200%)')};
+  transform: ${({$isVisible}) => ($isVisible ? 'translateY(110%)' : 'translateY(100%)')};
   transition: all 1s ease;
 `
 const ModalCloseDiv = styled.div`
   // modal 상단 div 고정
-  position: sticky;
+  position: fixed;
   top: 0;
+  width: 100%;
   background-color: white;
   display: flex;
   justify-content: end;
@@ -139,7 +142,7 @@ const ScheduleListModal = ({selectedDate, isVisible, setIsVisible}) => {
         return (
             <>
                 {listData.map((item, index) => (
-                <ModalContent key={index} $type={item.type} onClick={() => onClickDetailContent(item)}>
+                <ModalContent key={index} $type={item.type} $isDetail={isDetail} onClick={() => onClickDetailContent(item)}>
                     <ModalContentTimeDiv>{item.timeStart}</ModalContentTimeDiv>
                     <ScheduleLine $type={item.type} />
                     <DetailSchedule>
