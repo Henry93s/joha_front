@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-
-// 기존에 index.css에서 처리하던 스타일을 제거하고 간결하게 유지
+import axios from "axios";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -94,25 +93,41 @@ const FindPassword = () => {
     const emailRequestBtn = useRef(null);
     const navigate = useNavigate();
 
-    // 이메일 인증 요청 핸들러 (테스트용으로 설정)
-    const onEmailRequestHandler = (e) => {
+    // 이메일 인증 요청 핸들러
+    const onEmailRequestHandler = async (e) => {
         e.preventDefault();
-        if (emailRequestBtn.current) {
-            emailRequestBtn.current.disabled = true;
+
+        try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일 입력", email);
+
+            const response = await axios.post("http://localhost:3002//users/verify/findpw", { email });
+            if (response.status === 200) {
+                alert("인증 코드가 전송되었습니다.");
+                if (emailRequestBtn.current) {
+                    e.target.disabled = true;
+                }
+            }
+        } catch (error) {
+            console.error("인증 요청 실패", error);
         }
-        alert("인증 코드가 전송되었습니다.");
-        // 테스트를 위해 가짜 응답 설정
-        setTimeout(() => {
-            console.log("테스트용 이메일 요청 완료");
-        }, 1000);
     };
 
-    // 이메일 인증 확인 핸들러 (테스트용으로 설정)
-    const onEmailCheckHandler = (e) => {
+    // 이메일 인증 확인 핸들러
+    const onEmailCheckHandler = async (e) => {
         e.preventDefault();
-        if (code === "123456") {
-            navigate("/changePassword", { state: { email } });
-        } else {
+
+        try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일 입력", email);
+            console.log("인증 코드 입력", code);
+
+            const response = await axios.post("http://localhost:3002/users/verify/confirm", { email, code });
+            if (response.status === 200) {
+                navigate("/reset-password", { state: { email } });
+            }
+        } catch (error) {
+            console.error("인증 실패", error);
             alert("인증 번호가 올바르지 않습니다.");
         }
     };

@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LoginInput = styled.input`
     & + input {
@@ -46,31 +47,31 @@ const JoinBox = styled.div`
 `;
 
 const Login = () => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
-    const onSubmitHandler = (e: FormEvent<HTMLFormElement>) => {
+    // 로그인 요청 핸들러
+    const onSubmitHandler = async (e) => {
         e.preventDefault();
 
-        // test: 이메일과 비밀번호가 올바르게 입력된 경우
-        if (email === "test@test.com" && password === "test123") {
-            navigate("/"); // 메인 페이지로 이동
-        } else {
-            alert("이메일 또는 비밀번호가 올바르지 않습니다.");
+        try {
+            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
+            console.log("이메일:", email);
+            console.log("비밀번호:", password);
+
+            const response = await axios.post("http://localhost:3002/login", {
+                email: email,
+                password: password,
+            });
+            if (response.status === 200) {
+                localStorage.setItem("is_logined", "true");
+                navigate("/");
+            }
+        } catch (error) {
+            console.error("로그인 실패", error);
+            alert("아이디 또는 비밀번호가 잘못되었습니다.");
         }
-
-        // 서버 요청 응답 처리 시 사용 예정
-        // try {
-        //     const response = await axios.post("/login", {email, password});
-
-        //     if ( response.status === 200) {
-        //         localStorage.setItem("is_logined", "true");
-        //         navigator("/");
-        //     }
-        // } catch (error) {
-        //     console.error(error)
-        // }
     };
 
     return (
