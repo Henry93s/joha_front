@@ -43,7 +43,7 @@ const ListSlideContainer = styled.div`
   // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
   // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
   transform: ${({$isVisible}) => ($isVisible ? 'translateY(110%)' : 'translateY(100%)')};
-  transition: all 1s ease;
+  transition: all 1s ease-in-out;
 `
 const ModalCloseDiv = styled.div`
   // modal 상단 div 고정

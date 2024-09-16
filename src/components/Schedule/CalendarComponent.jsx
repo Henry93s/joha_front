@@ -113,7 +113,7 @@ const HiddenDateStyleCalendar = styled.div`
     
     animation: ${({ $slideDirection }) => 
       $slideDirection === "right" ? "slide-right" : 
-      $slideDirection === "left" ? "slide-left" : "none"} 0.25s ease-in-out;
+      $slideDirection === "left" ? "slide-left" : "none"} 0.3s ease-in-out;
   }
 `;
 
