@@ -1,5 +1,6 @@
 import styled, { keyframes, css } from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getDayWeather } from "../../api/getDayWeather";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
 const DetailSlideContainer = styled.div`
@@ -24,7 +25,7 @@ const DetailSlideContainer = styled.div`
 
     // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
     // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
-    transform: ${({$isDetail}) => ($isDetail ? 'translateX(0%)' : 'translateX(100%)')};
+    transform: ${({$isDetail}) => ($isDetail ? 'translateY(0%)' : 'translateY(100%)')};
     transition: all 0.65s ease;
 `
 
@@ -107,12 +108,34 @@ const DetailDivLine = styled.div`
     height: 2px;
     border-top: 2.5px solid #F0F0F2;
 `
+const WeatherImg = styled.img`
+  width: 100px;
+  height: 100px;
+`
 
 
 const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
+    // 날씨 데이터를 저장할 상태
+    const [weatherIcon, setWeatherIcon] = useState(null);
+
+    // 컴포넌트가 마운트될 때 한 번만 실행하도록 하기 위한 useEffect 사용
+    useEffect(() => {
+        let lat = 0;
+        let lon = 0;
+        // 위치 정보를 한 번만 가져옴
+        navigator.geolocation.getCurrentPosition((position) => {
+            lat = position.coords.latitude;
+            lon = position.coords.longitude;
+
+            // 날씨 데이터를 가져와 상태로 저장
+            
+        });
+    }, []); 
+
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
         const item = detailData;
+
         return (
         <>
             <DetailContainer>
@@ -130,6 +153,7 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                         item.time}
                 </DetailTimeDiv>
                 <DetailDivLine />
+                
             </DetailContainer>
         </>
         )
