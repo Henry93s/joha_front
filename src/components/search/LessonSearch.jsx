@@ -1,11 +1,13 @@
 import styled from "styled-components";
+import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg"; // SVG 파일을 컴포넌트로 import
-import { ReactComponent as FilterIcon } from "../../assets/icons/filter.svg"; // SVG 파일을 컴포넌트로 import
+
 import ListItem from "./ListItem";
 import KakaoMap from "./KakaoMap";
+import FilterComponent from "../item/Filter";
 const MapCont = styled.div`
   height: 47vw;
   max-height: 350px;
@@ -67,25 +69,6 @@ const SearchSelectStyles = {
     height: "50px", // indicator (드롭다운 화살표 등)의 높이 설정
   }),
 };
-const FilterSelectStyles = {
-  ...SearchSelectStyles,
-  control: (provided, state) => ({
-    ...provided,
-    backgroundColor: "#f1f1f1", // 배경색 변경
-    border: 0,
-    "border-radius": "15px",
-    width: "100%", // 원하는 너비
-    height: "34px",
-  }),
-  valueContainer: (provided) => ({
-    ...provided,
-    height: "34px", // valueContainer의 높이도 control과 동일하게 설정
-  }),
-  indicatorsContainer: (provided) => ({
-    ...provided,
-    height: "34px", // indicator (드롭다운 화살표 등)의 높이 설정
-  }),
-};
 
 const StyledSearchIcon = styled(SearchIcon)`
   width: 24px;
@@ -96,102 +79,31 @@ const StyledSearchIcon = styled(SearchIcon)`
   }
 `;
 
-const FilterBox = styled.div`
-  padding-top: 10px;
-`;
-const FilterBtn = styled.button`
-  background: none;
-  border: 0;
-  font-size: 12px;
-  &.on {
-    color: var(--main-color);
-  }
-`;
-const StyledFilter = styled(FilterIcon)`
-  margin-right: 3px;
-  width: 19px;
-  height: 19px;
-  &.on {
-    color: var(--main-color);
-  }
-  &.on path {
-    stroke: var(--main-color);
-  }
-`;
-const FilterCont = styled.div`
-  & dl {
-    display: flex;
-    padding-top: 7px;
-  }
-  & dt {
-    font-weight: bold;
-    width: 70px;
-    padding-top: 7px;
-  }
-  & dd {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    input {
-      height: auto;
-      border-radius: 4px;
-      background: #f1f1f1;
-      border: 0;
-      padding: 0 10px;
-    }
-    input[type="number"] {
-      text-align: right;
-    }
-    & > input {
-      width: calc(50% - 15px);
-      height: 34px;
-    }
-    font-size: 12px;
-  }
-`;
-const FilterSelect = styled(SearchSelect)`
-  width: 100%;
-  border-radius: 5px;
-  font-size: 12px;
-`;
-const ButtonDiv = styled.div`
-  text-align: right;
-  padding-top: 10px;
-  & button {
-    border-radius: 5px;
-    height: 30px;
-    width: 56px;
-    font-size: 12px;
-    margin-left: 5px;
-  }
-`;
-const InitBtn = styled.button`
-  background: #f1f1f1;
-`;
-const SubmitBtn = styled.button`
-  background: var(--main-color);
-  color: #fff;
-`;
-
 const ItemCont = styled.ul`
   padding-top: 18px;
+  .item {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    border-bottom: 1px solid #e6e6e6;
+    padding: 15px 0;
+  }
+
+  .item h5 {
+    font-size: 16px;
+  }
+
+  .item .right_box {
+    text-align: right;
+  }
 `;
 
 const LessonSearch = () => {
-  const [filterCheck, setFilterCheck] = useState(false); // 필터 클릭 상태 저장
-  const [searchSelect, setSearchSelect] = useState("");
-  const [filterOption, setFilterOption] = useState({
-    minAmount: "",
-    maxAmount: "",
-    data: "",
-    time: "",
-  });
   const [address, setAddress] = useState(""); // 유저 주소 상태 저장
-  const [filteredData, setFilterData] = useState([]);
   const SearchSelectEl = useRef();
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const [places, setPlaces] = useState([]); // 사용자 주소 근처의 장소만 불러오기
+  const [searchSelect, setSearchSelect] = useState("");
   const SearchOptions = [
     { value: "헬스", label: "헬스" },
     { value: "필라테스", label: "필라테스" },
@@ -205,17 +117,6 @@ const LessonSearch = () => {
     { value: "영어", label: "영어" },
   ];
 
-  const FilterOptions1 = [
-    { value: "one", label: "일회성" },
-    { value: "subscribe", label: "주기성" },
-    { value: "all", label: "모두" },
-  ];
-  const FilterOptions2 = [
-    { value: "morning", label: "오전 (06:00 ~ 11:59)" },
-    { value: "afternoon", label: "오후 (12:00 ~ 17:59)" },
-    { value: "evening", label: "저녁 (18:00 ~ 23:59)" },
-  ];
-
   const dataArr = [
     {
       title: "원데이 뜨개질 클래스",
@@ -225,6 +126,7 @@ const LessonSearch = () => {
       content:
         "하루만에 뜨개질 배우기하루만에 뜨개질 배우기하루만에 뜨개질 배우기하루만에 뜨개질 배우기",
       view: 320,
+      img: "",
       rocket: true,
     },
     {
@@ -234,6 +136,7 @@ const LessonSearch = () => {
       heart: 22,
       content: "좋아하는 피아노 곡 하나 정해서 마스터 하기!",
       view: 500,
+      img: "",
       rocket: false,
     },
     {
@@ -243,6 +146,7 @@ const LessonSearch = () => {
       star: 4.0,
       content: "하루 1시간 반 요가 배우기",
       view: 88,
+      img: "",
       rocket: false,
     },
     {
@@ -252,34 +156,10 @@ const LessonSearch = () => {
       star: 4.5,
       content: "자유형, 접영, 배영 등 1:1로 강의해드립니다.",
       view: 110,
+      img: "",
       rocket: false,
     },
   ];
-
-  // 필터 인풋 상태 저장
-  const handleInputChange = (e) => {
-    const [value, name] = e.target;
-    setFilterOption((prev) => {
-      return { ...prev, [name]: value };
-    });
-    console.log(filterOption);
-  };
-  const handleSelectChange = (selectedOption, { name }) => {
-    // react-select에서 onChange이벤트에 등록한 함수에 두번째 인자로
-    const firstName = name || "default";
-    setFilterOption((prev) => ({
-      ...prev,
-      [firstName]: selectedOption ? selectedOption.value : "",
-    }));
-    console.log(filterOption);
-  };
-
-  // 필터 적용
-  const filterOnHandler = () => {
-    setFilterOption((prev) => {
-      return [...prev];
-    });
-  };
 
   useEffect(() => {
     // axios 요청으로 사용자 위치 가져오기
@@ -287,13 +167,27 @@ const LessonSearch = () => {
 
     // 쿼리 값 가져와 searchSelect 상태에 저장
     setSearchSelect(searchParams.get("keyword"));
-    console.log(searchSelect);
   }, [searchSelect]);
+
+  // 가게 정보를 서버에서 가져오기(이름, 가격, 찜 개수, 별점, 이미지, 소개글, 찜하기 여부)
+  useEffect(() => {
+    async function fetchPlaces() {
+      try {
+        const response = await axios("/api/places"); // 백엔드의 가게 정보 요청 API
+        setPlaces(response.data); // 가져온 가게 정보를 상태로 저장
+      } catch (error) {
+        console.error("Failed to fetch places:", error);
+      }
+    }
+
+    fetchPlaces();
+  }, []);
 
   return (
     <div>
       <MapCont>
-        <KakaoMap address={address} keyword={searchSelect} />
+        {/* 키워드 넘겨줄 때 지역 + 키워드로 넘겨야 장소 + 키워드가 검색됨 */}
+        {places && <KakaoMap places={places} />}
       </MapCont>
       <Container>
         <Inputbox>
@@ -309,86 +203,28 @@ const LessonSearch = () => {
             }}
           />
         </Inputbox>
-        <FilterBox>
-          <FilterBtn
-            type="button"
-            onClick={() => setFilterCheck((prev) => !prev)}
-            className={filterCheck ? "on" : ""}
-          >
-            <StyledFilter className={filterCheck ? "on" : ""} />
-            필터
-          </FilterBtn>
-        </FilterBox>
-        {filterCheck && (
-          <FilterCont>
-            <dl>
-              <dt>가격</dt>
-              <dd>
-                {/* onWheel={event => (event.target).blur()} 휠 이벤트 시 숫자 변경되는 문제 해결 */}
-                <input
-                  type="number"
-                  name="minPrice"
-                  onWheel={(event) => event.target.blur()}
-                  onChange={(e) => handleInputChange(e)}
-                />
-                ~{" "}
-                <input
-                  type="number"
-                  name="maxPrice"
-                  onWheel={(event) => event.target.blur()}
-                  onChange={(e) => handleInputChange(e)}
-                />
-              </dd>
-            </dl>
-            <dl>
-              <dt>날짜</dt>
-              <dd>
-                <FilterSelect
-                  options={FilterOptions1}
-                  styles={FilterSelectStyles}
-                  placeholder="일회성 / 주기성 / 모두 가능"
-                  name="date"
-                  onChange={(e) => handleSelectChange(e)}
-                />
-              </dd>
-            </dl>
-            <dl>
-              <dt>시간</dt>
-              <dd>
-                <FilterSelect
-                  options={FilterOptions2}
-                  styles={FilterSelectStyles}
-                  placeholder="오전/오후/저녁"
-                  name="time"
-                  onChange={(e) => handleSelectChange(e)}
-                />
-              </dd>
-            </dl>
-            <ButtonDiv>
-              <InitBtn type="button">초기화</InitBtn>
-              <SubmitBtn type="button" onClick={filterOnHandler}>
-                적용
-              </SubmitBtn>
-            </ButtonDiv>
-          </FilterCont>
-        )}
+        <FilterComponent />
 
-        <ItemCont>
-          {dataArr.map((el, key) => {
-            return (
-              <ListItem
-                key={`ListItem${key}`}
-                title={el.title}
-                price={el.price}
-                star={el.star}
-                heart={el.heart}
-                content={el.content}
-                view={el.view}
-                rocket={el.rocket}
-              />
-            );
-          })}
-        </ItemCont>
+        <div id="menu_wrap">
+          <ItemCont id="placesList">
+            {places.map((el, key) => {
+              return (
+                <ListItem
+                  key={`ListItem${key}`}
+                  title={el.title}
+                  price={el.price}
+                  star={el.star}
+                  heart={el.heart}
+                  content={el.content}
+                  view={el.view}
+                  rocket={el.rocket}
+                  img={el.img}
+                />
+              );
+            })}
+          </ItemCont>
+          <div id="pagination"></div>
+        </div>
       </Container>
     </div>
   );
