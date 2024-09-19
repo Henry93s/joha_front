@@ -2,6 +2,7 @@ import styled from "styled-components";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const LoginInput = styled.input`
     & + input {
@@ -51,26 +52,31 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
 
+    // AES 암호화 함수
+    const encryptPassword = (password, key) => {
+        return CryptoJS.AES.encrypt(password, key).toString();
+    };
+
     // 로그인 요청 핸들러
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         try {
-            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
-            console.log("이메일:", email);
-            console.log("비밀번호:", password);
+            // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
+            const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
+            const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
             const response = await axios.post("http://localhost:3002/login", {
+                // 쿠키를 포함시키기 위해 설정
                 email: email,
-                password: password,
+                password: aesPassword,
             });
             if (response.status === 200) {
                 localStorage.setItem("is_logined", "true");
                 navigate("/");
             }
         } catch (error) {
-            console.error("로그인 실패", error);
-            alert("아이디 또는 비밀번호가 잘못되었습니다.");
+            alert(error.response?.data?.message || "로그인 실패");
         }
     };
 
