@@ -98,18 +98,15 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
-            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
-            console.log("이메일 입력", email);
-
-            const response = await axios.post("http://localhost:3002//users/verify/findpw", { email });
+            const response = await axios.post("http://localhost:3002/users/verify/findpw", { email });
             if (response.status === 200) {
-                alert("인증 코드가 전송되었습니다.");
+                alert(response.data.message);
                 if (emailRequestBtn.current) {
-                    e.target.disabled = true;
+                    emailRequestBtn.current.disabled = true;
                 }
             }
         } catch (error) {
-            console.error("인증 요청 실패", error);
+            alert(error.response?.data?.message || "인증 요청 실패");
         }
     };
 
@@ -118,17 +115,12 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
-            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
-            console.log("이메일 입력", email);
-            console.log("인증 코드 입력", code);
-
-            const response = await axios.post("http://localhost:3002/users/verify/confirm", { email, code });
+            const response = await axios.post("http://localhost:3002/users/verify/confirm", { email, secret: code });
             if (response.status === 200) {
-                navigate("/reset-password", { state: { email } });
+                navigate("/ChangePassword", { state: { email } });
             }
         } catch (error) {
-            console.error("인증 실패", error);
-            alert("인증 번호가 올바르지 않습니다.");
+            alert(error.response?.data?.message || "인증 번호가 올바르지 않습니다.");
         }
     };
 

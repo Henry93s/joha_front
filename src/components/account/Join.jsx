@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import CryptoJS from "crypto-js";
+import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const FlexDiv = styled.div`
     display: flex;

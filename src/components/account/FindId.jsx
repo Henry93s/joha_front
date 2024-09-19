@@ -76,21 +76,17 @@ const FindId = () => {
         e.preventDefault();
 
         try {
-            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
-            console.log("이름", name);
-            console.log("핸드폰번호", phoneNumber);
-
-            const response = await axios.post("http://localhost:3002/users/findId", {
+            const response = await axios.post("http://localhost:3002/users/findid", {
                 name,
                 phone: phoneNumber,
             });
 
             if (response.status === 200) {
-                setUserId(response.data.email); // 성공 시 받은 이메일 화면에 표시
+                setUserId(response.data.data);
+                alert(response.data.message);
             }
         } catch (error) {
-            console.error("아이디 찾기 실패", error);
-            alert("사용자를 찾을 수 없습니다.");
+            alert(error.response?.data?.message || "사용자를 찾을 수 없습니다.");
         }
     };
 
