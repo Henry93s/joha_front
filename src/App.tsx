@@ -11,6 +11,9 @@ import SchedulePage from "./pages/SchedulePage";
 import FindIdPage from "./pages/FindIdPage";
 import FindPasswordPage from "./pages/FindPasswordPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
+import AdminIntroPage from "./pages/AdminPage/AdminIntroPage";
+import AdminUserListPage from "./pages/AdminPage/AdminUserListPage";
+import AdminUserDetailPage from "./pages/AdminPage/AdminUserDetailPage";
 
 function App() {
     return (
@@ -52,6 +55,18 @@ function App() {
                     <Route
                         path="/schedule"
                         element={<SchedulePage />}
+                    />
+                    <Route
+                        path="/admin"
+                        element={<AdminIntroPage />}
+                    />
+                    <Route
+                        path="/admin/userList"
+                        element={<AdminUserListPage />}
+                    />
+                    <Route
+                        path="/admin/userList/:userId"
+                        element={<AdminUserDetailPage />}
                     />
                 </Routes>
             </BrowserRouter>
