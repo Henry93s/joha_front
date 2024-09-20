@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
+import InquiryButton from "../inquiry/InquiryButton.jsx";
 
 const ImgBox = styled.div`
     height: 20vh;
@@ -61,6 +62,9 @@ const JoinEnd = () => {
             <GoLogin>
                 <Link to="/login">로그인 하기</Link>
             </GoLogin>
+
+            {/* 임시 문의하기 버튼 테스트 */}
+            <InquiryButton />
         </>
     );
 };
