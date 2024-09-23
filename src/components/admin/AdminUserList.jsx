@@ -65,25 +65,25 @@ const AdminUserList = () => {
         fetchUsers();
     }, []);
 
-    const onClickUserDetailHandler = (userId) => {
-        navigate(`/admin/userList/${userId}`); // 회원 상세 페이지로 이동
+    const onClickUserDetailHandler = (email) => {
+        navigate(`/admin/userList/${email}`); // 회원 _id를 기반으로 상세 페이지로 이동
     };
 
     return (
         <>
             {users.map((user) => (
-                <UserListItem key={user.email}>
-                    <UserProfile onClick={() => onClickUserDetailHandler(user.id)}>
-                        {user.profileImg ? (
+                <UserListItem key={user._id}>
+                    <UserProfile onClick={() => onClickUserDetailHandler(user.email)}>
+                        {user.photo && user.photo !== "notFoundImage" ? (
                             <UserProfileImage
-                                src={user.profileImg}
+                                src={user.photo}
                                 alt={`${user.name} 프로필 이미지`}
                             />
                         ) : (
                             <DefaultProfileIcon /> // 기본 프로필 SVG 아이콘 사용
                         )}
                     </UserProfile>
-                    <UserInfo onClick={() => onClickUserDetailHandler(user.id)}>
+                    <UserInfo onClick={() => onClickUserDetailHandler(user.email)}>
                         <UserName>{user.name}</UserName>
                         <UserEmail>{user.email}</UserEmail>
                     </UserInfo>

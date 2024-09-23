@@ -65,7 +65,7 @@ function App() {
                         element={<AdminUserListPage />}
                     />
                     <Route
-                        path="/admin/userList/:userId"
+                        path="/admin/userList/:email"
                         element={<AdminUserDetailPage />}
                     />
                 </Routes>

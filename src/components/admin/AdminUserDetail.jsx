@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const Container = styled.div`
     display: flex;
@@ -70,13 +72,38 @@ const Button = styled.button`
     }
 `;
 
-const AdminUserDetail = ({ user }) => {
+const AdminUserDetail = () => {
+    const { email } = useParams(); // 이메일 기반으로 URL 파라미터 가져오기
+    const navigate = useNavigate();
+    const [user, setUser] = useState({
+        photo: "",
+        email: "",
+        base_address: "",
+        detail_address: "",
+        name: "",
+        phone: "",
+    });
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                // 이메일을 기반으로 회원 정보 가져오기
+                const response = await axios.post(`http://localhost:3002/users/email`, { email });
+                setUser(response.data.data); // 서버로부터 받은 데이터로 상태 업데이트
+            } catch (error) {
+                console.error("회원 정보 불러오기 실패", error);
+            }
+        };
+
+        fetchUser();
+    }, [email]);
+
     return (
         <Container>
             <ProfileIconWrapper>
-                {user?.profileImage ? (
+                {user.photo && user.photo !== "notFoundImage" ? (
                     <ProfileImage
-                        src={user.profileImage}
+                        src={user.photo}
                         alt="Profile"
                     />
                 ) : (
@@ -86,30 +113,30 @@ const AdminUserDetail = ({ user }) => {
 
             <ProfileItem>
                 <Label>이메일</Label>
-                <Value>{user?.email || "홍길동@gmail.com"}</Value>
+                <Value>{user.email}</Value>
             </ProfileItem>
 
             <ProfileItem>
                 <Label>주소</Label>
-                <Value>{user?.address || "서울시 @@구 @@동"}</Value>
+                <Value>{user.base_address}</Value>
             </ProfileItem>
 
             <ProfileItem>
                 <Label>상세 주소</Label>
-                <Value>{user?.detailAddress || "3층"}</Value>
+                <Value>{user.detail_address}</Value>
             </ProfileItem>
 
             <ProfileItem>
                 <Label>이름</Label>
-                <Value>{user?.name || "홍길동"}</Value>
+                <Value>{user.name}</Value>
             </ProfileItem>
 
             <ProfileItem>
                 <Label>전화번호</Label>
-                <Value>{user?.phone || "010-0000-0000"}</Value>
+                <Value>{user.phone || "정보 없음"}</Value>
             </ProfileItem>
 
-            <Button type="button">회원 삭제</Button>
+            <Button onClick={() => navigate("/admin/userList")}>회원 삭제</Button>
         </Container>
     );
 };
