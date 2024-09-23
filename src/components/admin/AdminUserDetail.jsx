@@ -89,7 +89,7 @@ const AdminUserDetail = () => {
             try {
                 // 이메일을 기반으로 회원 정보 가져오기
                 const response = await axios.post(`http://localhost:3002/users/email`, { email });
-                setUser(response.data.data); // 서버로부터 받은 데이터로 상태 업데이트
+                setUser(response.data.data);
             } catch (error) {
                 console.error("회원 정보 불러오기 실패", error);
             }
@@ -97,6 +97,19 @@ const AdminUserDetail = () => {
 
         fetchUser();
     }, [email]);
+
+    /** 회원 삭제 클릭 시  */
+    const onClickDeleteHandler = async () => {
+        if (window.confirm("회원을 삭제하시겠습니까??")) {
+            try {
+                await axios.delete("http://localhost:3002/users", { data: { email } });
+                alert("회원이 삭제되었습니다.");
+                navigate("/admin/userList");
+            } catch (error) {
+                console.error("회원 삭제 실패", error);
+            }
+        }
+    };
 
     return (
         <Container>
@@ -136,7 +149,12 @@ const AdminUserDetail = () => {
                 <Value>{user.phone || "정보 없음"}</Value>
             </ProfileItem>
 
-            <Button onClick={() => navigate("/admin/userList")}>회원 삭제</Button>
+            <Button
+                type="button"
+                onClick={onClickDeleteHandler}
+            >
+                회원 삭제
+            </Button>
         </Container>
     );
 };

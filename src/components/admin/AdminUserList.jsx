@@ -66,7 +66,7 @@ const AdminUserList = () => {
     }, []);
 
     const onClickUserDetailHandler = (email) => {
-        navigate(`/admin/userList/${email}`); // 회원 _id를 기반으로 상세 페이지로 이동
+        navigate(`/admin/userList/${email}`); // 회원 이메일 기반으로 상세 페이지로 이동
     };
 
     return (
