@@ -56,6 +56,7 @@ const AdminUserList = () => {
         const fetchUsers = async () => {
             try {
                 const response = await axios.get("http://localhost:3002/users");
+                console.log("user data", response.data);
                 setUsers(response.data);
             } catch (error) {
                 console.error("회원 데이터 가져오기 실패", error);

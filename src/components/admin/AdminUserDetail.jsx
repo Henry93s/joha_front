@@ -82,6 +82,9 @@ const AdminUserDetail = () => {
         detail_address: "",
         name: "",
         phone: "",
+        is_admin: "",
+        create_at: "",
+        update_at: "",
     });
 
     useEffect(() => {
@@ -89,6 +92,7 @@ const AdminUserDetail = () => {
             try {
                 // 이메일을 기반으로 회원 정보 가져오기
                 const response = await axios.post(`http://localhost:3002/users/email`, { email });
+                console.log("user detail data", response.data);
                 setUser(response.data.data);
             } catch (error) {
                 console.error("회원 정보 불러오기 실패", error);
@@ -146,7 +150,22 @@ const AdminUserDetail = () => {
 
             <ProfileItem>
                 <Label>전화번호</Label>
-                <Value>{user.phone || "정보 없음"}</Value>
+                <Value>{user.phone}</Value>
+            </ProfileItem>
+
+            <ProfileItem>
+                <Label>관리자 여부</Label>
+                <Value>{user.is_admin ? "관리자" : "일반 사용자"}</Value>
+            </ProfileItem>
+
+            <ProfileItem>
+                <Label>생성 일자</Label>
+                <Value>{user.create_at}</Value>
+            </ProfileItem>
+
+            <ProfileItem>
+                <Label>수정 일자</Label>
+                <Value>{user.update_at}</Value>
             </ProfileItem>
 
             <Button
