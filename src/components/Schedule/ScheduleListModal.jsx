@@ -174,7 +174,7 @@ const ScheduleListModal = ({selectedDate, isVisible, setIsVisible}) => {
                 </ModalCloseDiv>
                 {contentRender(selectedDate)}   
             </ListSlideContainer>
-            <ScheduleDetailModal detailData={detailData} isDetail={isDetail} setIsDetail={setIsDetail} />
+                <ScheduleDetailModal detailData={detailData} isDetail={isDetail} setIsDetail={setIsDetail} />
         </ModalOverlay>
     )
 }

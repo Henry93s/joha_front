@@ -115,10 +115,6 @@ const FooterMenu = () => {
     { name: "나의 수업", linked: "/myclass" },
     { name: "스토리", linked: "/story" },
   ];
- 
-  console.log(footerMenu.path)
-  console.log(`url("../../assets/icons${footerMenu.path}_color.png")`);
-  console.log(`url("../../assets/icons${items[1].linked}_color.png")`)
 
   return (
     <FooterDiv>

@@ -1,5 +1,7 @@
 import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
+import { getLocationXYData } from "../../utils/getLocationXYData";
+import { getDateFormat } from "../../utils/getDateFormat";
 import { getDayWeather } from "../../api/getDayWeather";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
@@ -103,6 +105,7 @@ const DetailTimeDiv = styled.div`
         font-size: 25px;
     }
 `
+
 const DetailDivLine = styled.div`
     width: 100%;
     height: 2px;
@@ -120,17 +123,33 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
 
     // 컴포넌트가 마운트될 때 한 번만 실행하도록 하기 위한 useEffect 사용
     useEffect(() => {
-        let lat = 0;
-        let lon = 0;
-        // 위치 정보를 한 번만 가져옴
-        navigator.geolocation.getCurrentPosition((position) => {
-            lat = position.coords.latitude;
-            lon = position.coords.longitude;
+        if(isDetail){
+            let lat = 0;
+            let lon = 0;
+            // 위치 정보를 한 번만 가져옴
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                // 현재 위도와 경도를 가져옴
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+    
+                // 현재 위도와 경도를 기상청 예보 api 에 반영하기 위한 x,y 좌표를 구함
+                // object rs {x : , y : } return 확인 완료
+                const locationRs = getLocationXYData(lat, lon);
+    
+                // 현재 시간을 바탕으로 기상청 예보 api에 반영하기 위한 포멧팅된 시간을 구함
+                const dates = new Date();
+                const dateRs = getDateFormat(dates);
+    
+                // x, y 좌표 및 포멧팅된 시간 데이터를 바탕으로 기상청 단기 예보, 중기 예보 데이터를 수집함
+                const rsdata = await getDayWeather(locationRs, dateRs);
+    
+                // 날씨 데이터를 가져와 상태로 저장
+                setWeatherIcon(rsdata)
+            });
+        }
+    }, [isDetail]); 
 
-            // 날씨 데이터를 가져와 상태로 저장
-            
-        });
-    }, []); 
+    console.log(weatherIcon)
 
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
@@ -152,6 +171,8 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                     ||
                         item.time}
                 </DetailTimeDiv>
+                <DetailDivLine />
+
                 <DetailDivLine />
                 
             </DetailContainer>
