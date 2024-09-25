@@ -3,6 +3,35 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
+import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg";
+
+const UserListContainer = styled.div`
+    height: 100vh;
+    overflow-y: auto;
+`;
+
+const SearchWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    margin-bottom: 10px;
+`;
+
+const UserSearchInput = styled.input`
+    outline: none;
+
+    &:focus {
+        border: 1px solid var(--main-color);
+    }
+`;
+
+const UserSearchIcon = styled(SearchIcon)`
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+`;
 
 const UserListItem = styled.div`
     display: flex;
@@ -49,6 +78,7 @@ const UserEmail = styled.span`
 
 const AdminUserList = () => {
     const [users, setUsers] = useState([]);
+    const [userSearch, setUserSearch] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -57,7 +87,13 @@ const AdminUserList = () => {
             try {
                 const response = await axios.get("http://localhost:3002/users");
                 console.log("user data", response.data);
-                setUsers(response.data);
+
+                // 회원 이름 가나다,abc 순으로 정렬 - localeCompare() 사용
+                const sortedUsers = response.data.sort((a, b) => {
+                    return a.name.localeCompare(b.name, "ko");
+                });
+
+                setUsers(sortedUsers);
             } catch (error) {
                 console.error("회원 데이터 가져오기 실패", error);
             }
@@ -70,9 +106,32 @@ const AdminUserList = () => {
         navigate(`/admin/userList/${email}`); // 회원 이메일 기반으로 상세 페이지로 이동
     };
 
+    // 회원 검색 필드 입력 시
+    const onChangeSearchHandler = (e) => {
+        setUserSearch(e.target.value);
+    };
+
+    // 검색한 내용의 맞는 회원 filter
+    const filteredUsers = users.filter((user) => {
+        return (
+            user.name.toLowerCase().includes(userSearch.toLowerCase()) ||
+            user.email.toLowerCase().includes(userSearch.toLowerCase())
+        );
+    });
+
     return (
-        <>
-            {users.map((user) => (
+        <UserListContainer>
+            <SearchWrapper>
+                <UserSearchInput
+                    type="text"
+                    placeholder="회원 검색"
+                    onChange={onChangeSearchHandler}
+                    value={userSearch}
+                />
+                <UserSearchIcon />
+            </SearchWrapper>
+
+            {filteredUsers.map((user) => (
                 <UserListItem key={user._id}>
                     <UserProfile onClick={() => onClickUserDetailHandler(user.email)}>
                         {user.photo && user.photo !== "notFoundImage" ? (
@@ -90,7 +149,7 @@ const AdminUserList = () => {
                     </UserInfo>
                 </UserListItem>
             ))}
-        </>
+        </UserListContainer>
     );
 };
 
