@@ -4,7 +4,7 @@ import styled from "styled-components";
 export const Container = styled.div`
     width: 100%;
     margin: 0 auto;
-    padding: 10px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
     height: 92vh;
@@ -75,8 +75,8 @@ export const ChatWrapper = styled.div<{ $isUser: boolean }>`
 export const ChatMessage = styled.div<{ $isUser: boolean }>`
     margin: 10px 0;
     padding: 10px;
-    background-color: ${(props) => (props.$isUser ? "#26bdbe" : "#ececec")};
-    color: ${(props) => (props.$isUser ? "white" : "black")};
+    background-color: ${(props) => (props.$isUser ? "#E3F6F6" : "#ececec")};
+    color: "black";
     border-radius: 10px;
     max-width: 70%;
     white-space: pre-wrap;
