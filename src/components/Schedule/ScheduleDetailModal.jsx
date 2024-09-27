@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 import { getLocationXYData } from "../../utils/getLocationXYData";
 import { getDateFormat } from "../../utils/getDateFormat";
 import { getDayWeather } from "../../api/getDayWeather";
+// 이미지를 import 로 불러와서 상대 경로로 참조
+import sun from "../../assets/icons/weather/sun.png";
+import clouds from "../../assets/icons/weather/clouds.png";
+import lowcloud from "../../assets/icons/weather/lowcloud.png";
+import rain from "../../assets/icons/weather/rain.png";
+import rainandsnow from "../../assets/icons/weather/rainandsnow.png";
+import snow from "../../assets/icons/weather/snow.png";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
 const DetailSlideContainer = styled.div`
@@ -105,20 +112,53 @@ const DetailTimeDiv = styled.div`
         font-size: 25px;
     }
 `
-
 const DetailDivLine = styled.div`
     width: 100%;
     height: 2px;
     border-top: 2.5px solid #F0F0F2;
 `
-const WeatherImg = styled.img`
-  width: 100px;
-  height: 100px;
+// 이미지 매핑 객체 생성
+// 문자열 키에 대한 타입 유효성 검사 생략 (as const - as keyof typeof imageMap~)
+const imageMap = {
+    "sun": sun,
+    "clouds": clouds,
+    "lowcloud": lowcloud,
+    "rain": rain,
+    "rainandsnow": rainandsnow,
+    "snow": snow
+  }
+const IconImgDiv = styled.div`
+  width: 96px;
+  height: 96px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: ${({ $icon }) =>
+    `url(${ imageMap[$icon] })`};
+`;
+const WeatherTextDiv = styled.div`
+    width: 96px;
+    height: 100px;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+
+    @media (max-width: 1000px) {
+        font-size: 25px;
+    }
+`
+const DetailWeatherDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
 `
 
 
 const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
     // 날씨 데이터를 저장할 상태
+    const [weather, setWeather] = useState(["", ""]);
     const [weatherIcon, setWeatherIcon] = useState(null);
 
     // 컴포넌트가 마운트될 때 한 번만 실행하도록 하기 위한 useEffect 사용
@@ -140,16 +180,62 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                 const dates = new Date();
                 const dateRs = getDateFormat(dates);
     
-                // x, y 좌표 및 포멧팅된 시간 데이터를 바탕으로 기상청 단기 예보, 중기 예보 데이터를 수집함
+                // x, y 좌표 및 포멧팅된 시간 데이터를 바탕으로 기상청 단기 예보 데이터를 수집함
                 const rsdata = await getDayWeather(locationRs, dateRs);
-    
-                // 날씨 데이터를 가져와 상태로 저장
-                setWeatherIcon(rsdata)
+
+                if(rsdata.data && rsdata.data.response){
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === TMP(온도) 만 추출
+                    const lastTMPObject = rsdata.data.response.body.items.item.filter(item => item.category === "TMP").slice(-1)[0];
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === SKY(하늘 상태) 만 추출
+                    const lastSKYObject = rsdata.data.response.body.items.item.filter(item => item.category === "SKY").slice(-1)[0];
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === PTY(강수 형태) 만 추출
+                    const lastPTYObject = rsdata.data.response.body.items.item.filter(item => item.category === "PTY").slice(-1)[0];
+
+                    // 날씨 데이터를 가져와 상태로 저장
+                    setWeather([lastTMPObject, lastSKYObject])
+
+                    // 날씨 상태에 따른 icon 부여
+                    // 맑음
+                    if(lastSKYObject.fcstValue === "1" || lastSKYObject.fcstValue === "2"){
+                        setWeather(["맑음", lastTMPObject.fcstValue]);
+                        setWeatherIcon("sun");
+                    }
+                    // 구름 많음 또는 흐림
+                    else if(lastSKYObject.fcstValue === "3" || lastSKYObject.fcstValue === "4"){
+                        // 강수 없음
+                        if(lastPTYObject.fcstValue === "0"){
+                            if(lastSKYObject.fcstValue === "3"){
+                                // clouds
+                                setWeather(["구름 많음", lastTMPObject.fcstValue]);
+                                setWeatherIcon("clouds");
+                            } else {
+                                // lowclouds
+                                setWeather(["흐림", lastTMPObject.fcstValue]);
+                                setWeatherIcon("lowcloud");
+                            }
+                        }
+                        // 비 또는 소나기
+                        else if(lastPTYObject.fcstValue === "1" || lastPTYObject.fcstValue === "4"){
+                            setWeather(["비", lastTMPObject.fcstValue]);
+                            setWeatherIcon("rain");
+                        }
+                        // 비/눈
+                        else if(lastPTYObject.fcstValue === "2"){
+                            setWeather(["비/눈", lastTMPObject.fcstValue]);
+                            setWeatherIcon("rainandsnow");
+                        }
+                        // 눈
+                        else if(lastPTYObject.fcstValue === "3"){
+                            setWeather(["눈", lastTMPObject.fcstValue]);
+                            setWeatherIcon("snow");
+                        }
+                    }
+                }
             });
         }
     }, [isDetail]); 
 
-    console.log(weatherIcon)
+    console.log(weather)
 
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
@@ -172,9 +258,20 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                         item.time}
                 </DetailTimeDiv>
                 <DetailDivLine />
-
-                <DetailDivLine />
-                
+                {weatherIcon !== null &&
+                    <>
+                        <DetailWeatherDiv>
+                            <WeatherTextDiv>
+                                {weather[0] }
+                                <br/>
+                                {weather[1] + "°"}
+                            </WeatherTextDiv>
+                            <IconImgDiv $icon={weatherIcon} />
+                            
+                        </DetailWeatherDiv>
+                        <DetailDivLine />
+                    </>          
+                }  
             </DetailContainer>
         </>
         )
