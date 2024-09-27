@@ -99,6 +99,12 @@ const DetailIcon = styled.div`
     background-color: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
     border-radius: 20px;
 `
+const Icon = styled.div`
+    width: 20px;
+    height: 20px;
+    background-color: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
+    border-radius: 20px;
+`
 const DetailTimeDiv = styled.div`
     display: flex;
     width: 95%;
@@ -117,6 +123,20 @@ const DetailDivLine = styled.div`
     height: 2px;
     border-top: 2.5px solid #F0F0F2;
 `
+const DetailWeatherDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 1000px) {
+        height: 130px;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+`
 // 이미지 매핑 객체 생성
 // 문자열 키에 대한 타입 유효성 검사 생략 (as const - as keyof typeof imageMap~)
 const imageMap = {
@@ -128,12 +148,16 @@ const imageMap = {
     "snow": snow
   }
 const IconImgDiv = styled.div`
-  width: 96px;
-  height: 96px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-image: ${({ $icon }) =>
-    `url(${ imageMap[$icon] })`};
+    width: 96px;
+    height: 96px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: ${({ $icon }) =>
+        `url(${ imageMap[$icon] })`};
+    
+    @media (max-width: 1000px) {
+        margin-bottom: 30px;
+    }
 `;
 const WeatherTextDiv = styled.div`
     width: 96px;
@@ -145,14 +169,6 @@ const WeatherTextDiv = styled.div`
     @media (max-width: 1000px) {
         font-size: 25px;
     }
-`
-const DetailWeatherDiv = styled.div`
-    display: flex;
-    flex-direction: column;
-    width: 95%;
-    height: 200px;
-    justify-content: center;
-    align-items: center;
 `
 
 
@@ -248,6 +264,7 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                     {item.content}
                     <DetailIconDiv>
                         <DetailIcon $type={item.type} />
+
                     </DetailIconDiv>
                 </DetailTitleDiv>
                 <DetailDivLine />
