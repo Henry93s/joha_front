@@ -1,6 +1,8 @@
 import styled from "styled-components";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import Item from "./Item";
+import { fetchStoryData } from "../../api/story";
 
 const Titlebox = styled.div`
   display: flex;
@@ -51,13 +53,27 @@ const customStyles = {
   }),
 };
 
-const dataArr = [
-  { image: "", title: "초보자용 헬스 루틴", recommend: 31, comment: 6 },
-  { image: "", title: "식단 추천", recommend: 12, comment: 1 },
-  { image: "", title: "스트레칭의 중요성", recommend: 16, comment: 2 },
-];
-
 const Story = () => {
+  const dataArr = [
+    { image: "", title: "초보자용 헬스 루틴", recommend: 31, comment: 6 },
+    { image: "", title: "식단 추천", recommend: 12, comment: 1 },
+    { image: "", title: "스트레칭의 중요성", recommend: 16, comment: 2 },
+  ];
+  const [data, setData] = useState(dataArr);
+  const [select, setSelect] = useState("all");
+
+  const selectChangeHandler = (option) => {
+    setSelect(option.value);
+    setData((prevData) => {
+      if (select === "comment") {
+      }
+      return [];
+    });
+  };
+
+  useEffect(() => {
+    fetchStoryData();
+  }, []);
   return (
     <div>
       <Titlebox>
@@ -67,6 +83,7 @@ const Story = () => {
           styles={customStyles}
           placeholder=""
           defaultValue={options[0]}
+          onChange={selectChangeHandler}
         />
       </Titlebox>
       <Container>

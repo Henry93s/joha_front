@@ -1,15 +1,15 @@
 import Header from "../components/layout/Header";
 import FooterMenu from "../components/layout/FooterMenu";
-import Story from "../components/story/Story";
+import List from "../components/wish/List";
 
-const StoryPage = () => {
+const WishListPage = () => {
   return (
     <>
       <Header />
-      <Story />
+      <List />
       <FooterMenu />
     </>
   );
 };
 
-export default StoryPage;
+export default WishListPage;
