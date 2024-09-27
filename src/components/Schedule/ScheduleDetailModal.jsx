@@ -1,6 +1,17 @@
 import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
+import { getLocationXYData } from "../../utils/getLocationXYData";
+import { getDateFormat } from "../../utils/getDateFormat";
 import { getDayWeather } from "../../api/getDayWeather";
+import { useScript } from "../../api/kakaoHooks";
+// 이미지를 import 로 불러와서 상대 경로로 참조
+import sun from "../../assets/icons/weather/sun.png";
+import clouds from "../../assets/icons/weather/clouds.png";
+import lowcloud from "../../assets/icons/weather/lowcloud.png";
+import rain from "../../assets/icons/weather/rain.png";
+import rainandsnow from "../../assets/icons/weather/rainandsnow.png";
+import snow from "../../assets/icons/weather/snow.png";
+import kakao from "../../assets/icons/kakao_btn.png";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
 const DetailSlideContainer = styled.div`
@@ -25,8 +36,8 @@ const DetailSlideContainer = styled.div`
 
     // Tip: style 속성에 설정한 CSS(attrs) 는 인라인 스타일로 적용되며, 인라인 스타일에서는 CSS 트랜지션이 제대로 동작하지 않을 수 있음
     // => transform 를 스타일 템플릿 리터럴 내에서 동적으로 설정
-    transform: ${({$isDetail}) => ($isDetail ? 'translateY(0%)' : 'translateY(100%)')};
-    transition: all 0.65s ease;
+    transform: ${({$isDetail}) => ($isDetail ? 'translateY(30%)' : 'translateY(100%)')};
+    transition: all 0.4s ease-in-out;
 `
 
 const ModalCloseDiv = styled.div`
@@ -87,7 +98,15 @@ const DetailIconDiv = styled.div`
 const DetailIcon = styled.div`
     width: 20px;
     height: 20px;
-    background-color: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
+    background-image: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
+    border-radius: 20px;
+`
+const KakaoIcon = styled.div`
+    width: 48px;
+    height: 48px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url(${ kakao });
     border-radius: 20px;
 `
 const DetailTimeDiv = styled.div`
@@ -108,29 +127,182 @@ const DetailDivLine = styled.div`
     height: 2px;
     border-top: 2.5px solid #F0F0F2;
 `
-const WeatherImg = styled.img`
-  width: 100px;
-  height: 100px;
+const DetailWeatherDiv = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 95%;
+    height: 200px;
+    justify-content: center;
+    align-items: center;
+
+    @media (max-width: 1000px) {
+        height: 130px;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+`
+// 이미지 매핑 객체 생성
+// 문자열 키에 대한 타입 유효성 검사 생략 (as const - as keyof typeof imageMap~)
+const imageMap = {
+    "sun": sun,
+    "clouds": clouds,
+    "lowcloud": lowcloud,
+    "rain": rain,
+    "rainandsnow": rainandsnow,
+    "snow": snow
+  }
+const IconImgDiv = styled.div`
+    width: 96px;
+    height: 96px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: ${({ $icon }) =>
+        `url(${ imageMap[$icon] })`};
+    
+    @media (max-width: 1000px) {
+        margin-bottom: 30px;
+    }
+`;
+const WeatherTextDiv = styled.div`
+    width: 96px;
+    height: 100px;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+
+    @media (max-width: 1000px) {
+        font-size: 25px;
+    }
 `
 
 
 const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
     // 날씨 데이터를 저장할 상태
+    const [weather, setWeather] = useState(["", ""]);
     const [weatherIcon, setWeatherIcon] = useState(null);
 
-    // 컴포넌트가 마운트될 때 한 번만 실행하도록 하기 위한 useEffect 사용
-    useEffect(() => {
-        let lat = 0;
-        let lon = 0;
-        // 위치 정보를 한 번만 가져옴
-        navigator.geolocation.getCurrentPosition((position) => {
-            lat = position.coords.latitude;
-            lon = position.coords.longitude;
+    // kakao SDK 스크립트 로드 상태 확인
+    const status = useScript("https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js");
 
-            // 날씨 데이터를 가져와 상태로 저장
-            
+    // kakao sdk 초기화하기
+    // status가 변경될 때마다 실행되며, status가 ready일 때 초기화를 시도합니다.
+    useEffect(() => {
+        if (status === "ready" && window.Kakao) {
+            // 중복 initialization 방지
+            if (!window.Kakao.isInitialized()) {
+                // 두번째 step 에서 가져온 javascript key 를 이용하여 initialize
+                window.Kakao.init(process.env.REACT_APP_KAKAO_APP_KEY);
+            }
+        }
+    }, [status]);	
+
+    useEffect(() => {
+        if(isDetail){
+            let lat = 0;
+            let lon = 0;
+            // 위치 정보를 한 번만 가져옴
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                // 현재 위도와 경도를 가져옴
+                lat = position.coords.latitude;
+                lon = position.coords.longitude;
+    
+                // 현재 위도와 경도를 기상청 예보 api 에 반영하기 위한 x,y 좌표를 구함
+                // object rs {x : , y : } return 확인 완료
+                const locationRs = getLocationXYData(lat, lon);
+    
+                // 현재 시간을 바탕으로 기상청 예보 api에 반영하기 위한 포멧팅된 시간을 구함
+                const dates = new Date();
+                const dateRs = getDateFormat(dates);
+    
+                // x, y 좌표 및 포멧팅된 시간 데이터를 바탕으로 기상청 단기 예보 데이터를 수집함
+                const rsdata = await getDayWeather(locationRs, dateRs);
+
+                if(rsdata.data && rsdata.data.response){
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === TMP(온도) 만 추출
+                    const lastTMPObject = rsdata.data.response.body.items.item.filter(item => item.category === "TMP").slice(-1)[0];
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === SKY(하늘 상태) 만 추출
+                    const lastSKYObject = rsdata.data.response.body.items.item.filter(item => item.category === "SKY").slice(-1)[0];
+                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === PTY(강수 형태) 만 추출
+                    const lastPTYObject = rsdata.data.response.body.items.item.filter(item => item.category === "PTY").slice(-1)[0];
+
+                    // 날씨 데이터를 가져와 상태로 저장
+                    setWeather([lastTMPObject, lastSKYObject])
+
+                    // 날씨 상태에 따른 icon 부여
+                    // 맑음
+                    if(lastSKYObject.fcstValue === "1" || lastSKYObject.fcstValue === "2"){
+                        setWeather(["맑음", lastTMPObject.fcstValue]);
+                        setWeatherIcon("sun");
+                    }
+                    // 구름 많음 또는 흐림
+                    else if(lastSKYObject.fcstValue === "3" || lastSKYObject.fcstValue === "4"){
+                        // 강수 없음
+                        if(lastPTYObject.fcstValue === "0"){
+                            if(lastSKYObject.fcstValue === "3"){
+                                // clouds
+                                setWeather(["구름 많음", lastTMPObject.fcstValue]);
+                                setWeatherIcon("clouds");
+                            } else {
+                                // lowclouds
+                                setWeather(["흐림", lastTMPObject.fcstValue]);
+                                setWeatherIcon("lowcloud");
+                            }
+                        }
+                        // 비 또는 소나기
+                        else if(lastPTYObject.fcstValue === "1" || lastPTYObject.fcstValue === "4"){
+                            setWeather(["비", lastTMPObject.fcstValue]);
+                            setWeatherIcon("rain");
+                        }
+                        // 비/눈
+                        else if(lastPTYObject.fcstValue === "2"){
+                            setWeather(["비/눈", lastTMPObject.fcstValue]);
+                            setWeatherIcon("rainandsnow");
+                        }
+                        // 눈
+                        else if(lastPTYObject.fcstValue === "3"){
+                            setWeather(["눈", lastTMPObject.fcstValue]);
+                            setWeatherIcon("snow");
+                        }
+                    }
+                }
+            });
+        }
+    }, [isDetail]); 
+
+    // 주소 카카오톡에 공유
+    const handleKakaoButton = () => {
+        // 크롬 브라우저 > 개발자모드 > 모바일 설정 지원하지 않음
+        if (window.Kakao && window.Kakao.Share) {
+        window.Kakao.Share.createDefaultButton({
+            container: '#kakaoShareBtn',
+            objectType: 'feed',
+            content: {
+            title: "공유하기",
+            description: "공유 설명" + '...',
+            imageUrl: weatherIcon,
+            link: {
+                // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+            },
+            },
+            buttons: [
+            {
+                title: '보러가기',
+                link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+                }
+            }
+            ],
+            // 카카오톡 미설치 시 카카오톡 설치 경로이동
+            installTalk: true,
         });
-    }, []); 
+
+        } else {
+            console.error('Kakao SDK is not ready.');
+        }
+    };
 
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
@@ -143,6 +315,7 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                     {item.content}
                     <DetailIconDiv>
                         <DetailIcon $type={item.type} />
+                        <KakaoIcon onClick={handleKakaoButton} id="kakaoShareBtn" />
                     </DetailIconDiv>
                 </DetailTitleDiv>
                 <DetailDivLine />
@@ -153,7 +326,20 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                         item.time}
                 </DetailTimeDiv>
                 <DetailDivLine />
-                
+                {weatherIcon !== null &&
+                    <>
+                        <DetailWeatherDiv>
+                            <WeatherTextDiv>
+                                {weather[0] }
+                                <br/>
+                                {weather[1] + "°"}
+                            </WeatherTextDiv>
+                            <IconImgDiv $icon={weatherIcon} />
+                            
+                        </DetailWeatherDiv>
+                        <DetailDivLine />
+                    </>          
+                }  
             </DetailContainer>
         </>
         )
