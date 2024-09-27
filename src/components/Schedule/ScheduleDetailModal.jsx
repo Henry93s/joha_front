@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getLocationXYData } from "../../utils/getLocationXYData";
 import { getDateFormat } from "../../utils/getDateFormat";
 import { getDayWeather } from "../../api/getDayWeather";
+import { useScript } from "../../api/kakaoHooks";
 // 이미지를 import 로 불러와서 상대 경로로 참조
 import sun from "../../assets/icons/weather/sun.png";
 import clouds from "../../assets/icons/weather/clouds.png";
@@ -10,6 +11,7 @@ import lowcloud from "../../assets/icons/weather/lowcloud.png";
 import rain from "../../assets/icons/weather/rain.png";
 import rainandsnow from "../../assets/icons/weather/rainandsnow.png";
 import snow from "../../assets/icons/weather/snow.png";
+import kakao from "../../assets/icons/kakao_btn.png";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
 const DetailSlideContainer = styled.div`
@@ -96,13 +98,15 @@ const DetailIconDiv = styled.div`
 const DetailIcon = styled.div`
     width: 20px;
     height: 20px;
-    background-color: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
+    background-image: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
     border-radius: 20px;
 `
-const Icon = styled.div`
-    width: 20px;
-    height: 20px;
-    background-color: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
+const KakaoIcon = styled.div`
+    width: 48px;
+    height: 48px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url(${ kakao });
     border-radius: 20px;
 `
 const DetailTimeDiv = styled.div`
@@ -177,7 +181,21 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
     const [weather, setWeather] = useState(["", ""]);
     const [weatherIcon, setWeatherIcon] = useState(null);
 
-    // 컴포넌트가 마운트될 때 한 번만 실행하도록 하기 위한 useEffect 사용
+    // kakao SDK 스크립트 로드 상태 확인
+    const status = useScript("https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js");
+
+    // kakao sdk 초기화하기
+    // status가 변경될 때마다 실행되며, status가 ready일 때 초기화를 시도합니다.
+    useEffect(() => {
+        if (status === "ready" && window.Kakao) {
+            // 중복 initialization 방지
+            if (!window.Kakao.isInitialized()) {
+                // 두번째 step 에서 가져온 javascript key 를 이용하여 initialize
+                window.Kakao.init(process.env.REACT_APP_KAKAO_APP_KEY);
+            }
+        }
+    }, [status]);	
+
     useEffect(() => {
         if(isDetail){
             let lat = 0;
@@ -251,7 +269,40 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
         }
     }, [isDetail]); 
 
-    console.log(weather)
+    // 주소 카카오톡에 공유
+    const handleKakaoButton = () => {
+        // 크롬 브라우저 > 개발자모드 > 모바일 설정 지원하지 않음
+        if (window.Kakao && window.Kakao.Share) {
+        window.Kakao.Share.createDefaultButton({
+            container: '#kakaoShareBtn',
+            objectType: 'feed',
+            content: {
+            title: "공유하기",
+            description: "공유 설명" + '...',
+            imageUrl: weatherIcon,
+            link: {
+                // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+            },
+            },
+            buttons: [
+            {
+                title: '보러가기',
+                link: {
+                mobileWebUrl: window.location.href,
+                webUrl: window.location.href,
+                }
+            }
+            ],
+            // 카카오톡 미설치 시 카카오톡 설치 경로이동
+            installTalk: true,
+        });
+
+        } else {
+            console.error('Kakao SDK is not ready.');
+        }
+    };
 
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
@@ -264,7 +315,7 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
                     {item.content}
                     <DetailIconDiv>
                         <DetailIcon $type={item.type} />
-
+                        <KakaoIcon onClick={handleKakaoButton} id="kakaoShareBtn" />
                     </DetailIconDiv>
                 </DetailTitleDiv>
                 <DetailDivLine />
