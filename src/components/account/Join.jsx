@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const FlexDiv = styled.div`
     display: flex;
@@ -89,6 +90,8 @@ const ErrorMessage = styled.p`
 `;
 
 const Join = () => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: "",
         emailCode: "",
@@ -108,24 +111,8 @@ const Join = () => {
         phoneError: "",
     });
 
-    // 임시 테스트용
-    const [isEmailCode, setIsEmailCode] = useState(false); // 이메일 인증 요청
-    const [isCodeCheck, setIsCodeCheck] = useState(false); // 인증 확인
-
-    const onClickEmailCodHandler = () => {
-        setIsEmailCode(true);
-        setTimeout(() => {
-            alert("인증 코드 전송");
-            setIsEmailCode(false);
-        }, 2000);
-    };
-
-    const onClickCodeCheck = () => {
-        setIsCodeCheck(true);
-        alert("인증 확인 완료");
-    };
-
-    const navigate = useNavigate();
+    const [isEmailCode, setIsEmailCode] = useState(false);
+    const [isCodeCheck, setIsCodeCheck] = useState(false);
 
     /** 유효성 검사 */
     const validateField = {
@@ -133,8 +120,8 @@ const Join = () => {
             return EmailRegex(value) ? "" : "올바른 이메일 주소를 입력해주세요.";
         },
         password: (value) => {
-            if (value.length < 8) {
-                return "8자 이상 입력해주세요.";
+            if (value.length < 10) {
+                return "10자 이상 입력해주세요.";
             }
             const [hasLetter, hasNumber, hasSpecialChar] = PasswordRegex(value);
             const validCombination = [hasLetter, hasNumber, hasSpecialChar].filter(Boolean).length >= 2;
@@ -148,7 +135,38 @@ const Join = () => {
         },
     };
 
-    // 프로필 사진 변경될때 호출 되는 함수
+    // 인증요청 클릭 시 처리 함수
+    const onClickEmailCodeRequest = async () => {
+        try {
+            const response = await axios.post("http://localhost:3002/users/verify", { email: formData.email });
+            if (response.status === 201) {
+                alert("인증 코드 전송");
+                setIsEmailCode(true);
+            }
+        } catch (error) {
+            // 서버에서 오는 오류 메시지를 받아서 처리
+            alert(error.response?.data?.message);
+        }
+    };
+
+    // 인증확인 클릭 시 처리 함수
+    const onClickCodeCheck = async () => {
+        try {
+            const response = await axios.post("http://localhost:3002/users/verify/confirm", {
+                email: formData.email,
+                secret: formData.emailCode,
+            });
+            if (response.status === 200) {
+                alert("인증 확인 완료");
+                setIsCodeCheck(true);
+            }
+        } catch (error) {
+            // 서버에서 오는 오류 메시지를 받아서 처리
+            alert(error.response?.data?.message);
+        }
+    };
+
+    // 프로필 사진 변경될 때 호출 되는 함수
     const onChangeProfileHandler = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -198,9 +216,18 @@ const Join = () => {
         document.body.appendChild(script);
     };
 
+    // // AES 암호화 함수
+    // const encryptPassword = (password, key) => {
+    //     return CryptoJS.AES.encrypt(password, key).toString();
+    // };
+
     // 폼 제출 시 호출되는 함수
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+
+        // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
+        // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
+        // const aesPassword = encryptPassword(formData.password, key); // 암호화된 비밀번호
 
         // 모든 필드 유효성 검사
         const isValid = Object.keys(validateField).reduce((acc, field) => {
@@ -238,13 +265,14 @@ const Join = () => {
                     headers: { "Content-Type": "multipart/form-data" },
                 });
 
+                // 가입 성공 시
                 if (response.status === 201) {
-                    alert("회원가입 성공");
+                    alert(response.data.message); // 백엔드에서 온 메시지 사용
                     navigate("/joinEnd");
                 }
             } catch (error) {
-                console.error("회원가입 실패", error);
-                alert("회원가입 실패");
+                // 실패 시 백엔드에서 온 에러 메시지 사용
+                alert(error.response?.data?.message || "회원가입에 실패했습니다.");
             }
         }
     };
@@ -285,7 +313,7 @@ const Join = () => {
                 />
                 <Button
                     type="button"
-                    onClick={onClickEmailCodHandler}
+                    onClick={onClickEmailCodeRequest}
                     disabled={isEmailCode}
                 >
                     인증요청

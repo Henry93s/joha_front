@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const ChangeInput = styled.input`
     border: 1px solid #ddd;
@@ -57,8 +58,8 @@ const ChangePassword = () => {
 
     // 비밀번호 유효성 검사
     const validatePassword = (password) => {
-        if (password.length > 0 && password.length < 8) {
-            return "8자 이상 입력해주세요.";
+        if (password.length > 0 && password.length < 10) {
+            return "10자 이상 입력해주세요.";
         }
         const hasLetter = /[a-zA-Z]/.test(password);
         const hasNumber = /\d/.test(password);
@@ -71,6 +72,11 @@ const ChangePassword = () => {
 
         return "";
     };
+
+    // // 비밀번호 AES 암호화 함수
+    // const encryptPassword = (password, key) => {
+    //     return CryptoJS.AES.encrypt(password, key).toString();
+    // };
 
     // 비밀번호 변경하기 핸들러
     const onSubmitHandler = async (e) => {
@@ -89,14 +95,12 @@ const ChangePassword = () => {
         }
 
         try {
-            // 사용자가 입력한 필드 값들이 제대로 전달되는지 콘솔로 확인
-            const email = location.state?.email || "test@example.com"; // 임시 추후 삭제
-            console.log("이메일:", email);
-            console.log("비밀번호:", userInfo.password);
+            // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
+            // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
+            // const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
-            const response = await axios.post("http://localhost:3002/users/resetpassword", {
-                // email: location.state.email,
-                email: email, // 임시 이메일 추후 삭제
+            const response = await axios.put("http://localhost:3002/users", {
+                email: location.state.email,
                 newPassword: password,
             });
 
@@ -105,7 +109,7 @@ const ChangePassword = () => {
                 navigate("/login");
             }
         } catch (error) {
-            console.error("비밀번호 변경 실패", error);
+            alert("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -138,8 +142,7 @@ const ChangePassword = () => {
             {/* 이메일 필드 (읽기 전용) */}
             <ChangeInput
                 type="email"
-                // value={location.state.email ? location.state.email : ""} // 정상 코드
-                value="test@test.com" // 임시 이메일(백엔드 정상 연결시 삭제)
+                value={location.state.email ? location.state.email : ""}
                 readOnly
             />
 
