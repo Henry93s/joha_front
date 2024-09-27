@@ -7,6 +7,7 @@ import locale from 'antd/es/date-picker/locale/ko_KR';
 import dayjs from "dayjs";
 import ScheduleListModal from "./ScheduleListModal";
 import { getScheduleListData } from "../../api/getScheduleListData";
+import "swiper/css";
 
 // pc 일 때는 하단 공백에 일정 리스트를 출력할 것임
 // 모바일일 때는 일정 클릭 시 아래에서 올라오는 슬라이드 모달로 일정 리스트를 출력할 것임
@@ -113,7 +114,7 @@ const HiddenDateStyleCalendar = styled.div`
     
     animation: ${({ $slideDirection }) => 
       $slideDirection === "right" ? "slide-right" : 
-      $slideDirection === "left" ? "slide-left" : "none"} 0.25s ease-in-out;
+      $slideDirection === "left" ? "slide-left" : "none"} 0.3s ease-in-out;
   }
 `;
 
@@ -208,6 +209,7 @@ const CalendarComponent = () => {
   const onChangeMonthPrev = (current, onChange) => {
     // dayjs 라이브러리는 기본적으로 불변(immutable)이기 때문에, 객체의 값을 직접 수정하는 대신, 기존 객체를 복사한 후 변경 사항을 적용
     const newValue = current.clone().subtract(1, 'month');
+    // antd 캘린더의 onChange 호출
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
     setMonths(newValue.startOf('month'));
@@ -224,6 +226,7 @@ const CalendarComponent = () => {
   const onChangeMonthNext = (current, onChange) => {
     // dayjs 라이브러리는 기본적으로 불변(immutable)이기 때문에, 객체의 값을 직접 수정하는 대신, 기존 객체를 복사한 후 변경 사항을 적용
     const newValue = current.clone().add(1, 'month');
+    // antd 캘린더의 onChange 호출
     onChange(newValue);
     // useEffect 에 의존성을 부여하기 위한 setMonth
     setMonths(newValue.startOf('month'));
@@ -274,21 +277,24 @@ const CalendarComponent = () => {
             }}
           >
             <HiddenDateStyleCalendar $slideDirection={slideDirection}>
-              <Calendar cellRender={cellRender} locale={locale} 
-                        onSelect={onDateSelect} // 날짜 선택 이벤트
-              // headerRender props 코드 수정으로 기본 스타일을 변경시킴
-              headerRender={({ value, onChange }) => {
-                  const year = value.year();
-                  const month = value.month();
-                  return (
-                    <HeaderContainer>
-                      <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
-                        <CalendarHeader>
-                          {year}년 {month + 1}월
-                        </CalendarHeader>
-                      <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
-                    </HeaderContainer>
-                  );
+              <Calendar
+                cellRender={cellRender} 
+                locale={locale} 
+                // 날짜 선택 이벤트
+                onSelect={onDateSelect}
+                // headerRender props 코드 수정으로 기본 스타일을 변경시킴
+                headerRender={({ value, onChange }) => {
+                    const year = value.year();
+                    const month = value.month();
+                    return (
+                      <HeaderContainer>
+                        <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthPrev(value, onChange)} >{"<"}</CalendarHeaderControl>
+                          <CalendarHeader>
+                            {year}년 {month + 1}월
+                          </CalendarHeader>
+                        <CalendarHeaderControl disabled={slideDisable} onClick={() => onChangeMonthNext(value, onChange)}>{">"}</CalendarHeaderControl>
+                      </HeaderContainer>
+                    );
                 }}
               />
             </HiddenDateStyleCalendar>
