@@ -10,6 +10,7 @@ const ThumbNailBox = styled.div`
   border-radius: 15px;
   background: #ddd;
   height: 47vw;
+  max-height: 330px;
   overflow: hidden;
   & img {
     width: 100%;

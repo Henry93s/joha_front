@@ -1,9 +1,9 @@
 import styled from "styled-components";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ReactComponent as StarIcon } from "../../assets/icons/star.svg"; // SVG 파일을 컴포넌트로 import
 import { ReactComponent as HeartFillIcon } from "../../assets/icons/heart-fill.svg"; // SVG 파일을 컴포넌트로 import
-import Heart from "../item/Heart";
-import MainImage from "../item/MainImage";
+import { ReactComponent as HeartIcon } from "../../assets/icons/heart.svg"; // SVG 파일을 컴포넌트로 import
 
 const Item = styled(Link)`
   display: flex;
@@ -68,6 +68,15 @@ const RightBox = styled.div`
   justify-content: end;
 `;
 
+const ItemImageBox = styled.div`
+  background: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  height: 65px;
+  width: 65px;
+  margin-top: 20px;
+`;
+
 const ListItem = ({
   title,
   price,
@@ -78,6 +87,8 @@ const ListItem = ({
   view,
   rocket,
 }) => {
+  const [isOn, setIsOn] = useState(false);
+
   return (
     <>
       <li>
@@ -98,8 +109,12 @@ const ListItem = ({
             <InfoText>{content}</InfoText>
           </LeftBox>
           <RightBox>
-            <Heart isOn={false} />
-            <MainImage src={img} />
+            {isOn ? (
+              <HeartFillIcon width="22px" height="22px" />
+            ) : (
+              <HeartIcon width="22px" height="22px" />
+            )}
+            <ItemImageBox src={img} />
           </RightBox>
         </Item>
       </li>

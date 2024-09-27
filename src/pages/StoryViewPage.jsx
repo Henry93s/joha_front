@@ -1,15 +1,15 @@
 import Header from "../components/layout/Header";
 import FooterMenu from "../components/layout/FooterMenu";
-import Story from "../components/story/Story";
+import View from "../components/story/View";
 
-const StoryPage = () => {
+const StoryViewPage = () => {
   return (
     <>
       <Header />
-      <Story />
+      <View />
       <FooterMenu />
     </>
   );
 };
 
-export default StoryPage;
+export default StoryViewPage;
