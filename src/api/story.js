@@ -11,7 +11,7 @@ export const fetchStoryData = async () => {
 };
 
 /* 스토리 삭제하기 */
-export const deleteStory = async (id) => {
+export const deleteStoryData = async (id) => {
   try {
     const response = await axios.delete(`/story/delete`, {
       data: { nanoid: id },
