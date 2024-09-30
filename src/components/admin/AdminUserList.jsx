@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import axios from "axios";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg";
+import { fetchAllUsers } from "../../api/user";
 
 const UserListContainer = styled.div`
     height: 100vh;
@@ -85,7 +85,7 @@ const AdminUserList = () => {
         // 전체 회원 데이터 가져오기
         const fetchUsers = async () => {
             try {
-                const response = await axios.get("http://localhost:3002/users");
+                const response = await fetchAllUsers();
                 console.log("user data", response.data);
 
                 // 회원 이름 가나다,abc 순으로 정렬 - localeCompare() 사용

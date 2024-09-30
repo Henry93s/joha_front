@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import { findUserId } from "../../api/user";
 
 const LoginInput = styled.input`
     & + input {
@@ -76,11 +76,7 @@ const FindId = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:3002/users/findid", {
-                name,
-                phone: phoneNumber,
-            });
-
+            const response = await findUserId(name, phoneNumber);
             if (response.status === 200) {
                 setUserId(response.data.data);
                 alert(response.data.message);

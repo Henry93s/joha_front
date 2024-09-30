@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { passwordRequestEmailCode, verifyEmailCode } from "../../api/emailAuth";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -98,7 +98,7 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:3002/users/verify/findpw", { email });
+            const response = await passwordRequestEmailCode(email);
             if (response.status === 200) {
                 alert(response.data.message);
                 if (emailRequestBtn.current) {
@@ -115,7 +115,7 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:3002/users/verify/confirm", { email, secret: code });
+            const response = await verifyEmailCode(email, code);
             if (response.status === 200) {
                 navigate("/ChangePassword", { state: { email } });
             }
