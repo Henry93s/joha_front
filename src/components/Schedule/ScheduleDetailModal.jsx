@@ -1,8 +1,5 @@
 import styled, { keyframes, css } from "styled-components";
 import { useEffect, useState } from "react";
-import { getLocationXYData } from "../../utils/getLocationXYData";
-import { getDateFormat } from "../../utils/getDateFormat";
-import { getDayWeather } from "../../api/getDayWeather";
 import { useScript } from "../../api/kakaoHooks";
 // 이미지를 import 로 불러와서 상대 경로로 참조
 import sun from "../../assets/icons/weather/sun.png";
@@ -12,6 +9,7 @@ import rain from "../../assets/icons/weather/rain.png";
 import rainandsnow from "../../assets/icons/weather/rainandsnow.png";
 import snow from "../../assets/icons/weather/snow.png";
 import kakao from "../../assets/icons/kakao_btn.png";
+import { getWeatherData } from "../../utils/getWeatherData";
 
 // 리스트 항목 클릭 시 발생하는 슬라이더 항목 디테일 모달 컨테이너
 const DetailSlideContainer = styled.div`
@@ -95,12 +93,6 @@ const DetailIconDiv = styled.div`
     width: 15%;
     height: 100%;
 `
-const DetailIcon = styled.div`
-    width: 20px;
-    height: 20px;
-    background-image: ${({$type}) => ($type === "error" ? '#FE5054' : '#ADB4E0')};
-    border-radius: 20px;
-`
 const KakaoIcon = styled.div`
     width: 48px;
     height: 48px;
@@ -108,6 +100,7 @@ const KakaoIcon = styled.div`
     background-repeat: no-repeat;
     background-image: url(${ kakao });
     border-radius: 20px;
+    cursor: pointer;
 `
 const DetailTimeDiv = styled.div`
     display: flex;
@@ -152,7 +145,7 @@ const imageMap = {
     "snow": snow
   }
 const IconImgDiv = styled.div`
-    width: 96px;
+    width: 106px;
     height: 96px;
     background-size: contain;
     background-repeat: no-repeat;
@@ -164,7 +157,7 @@ const IconImgDiv = styled.div`
     }
 `;
 const WeatherTextDiv = styled.div`
-    width: 96px;
+    width: 106px;
     height: 100px;
     font-size: 28px;
     font-weight: bold;
@@ -198,125 +191,56 @@ const ScheduleDetailModal = ({detailData, isDetail, setIsDetail}) => {
 
     useEffect(() => {
         if(isDetail){
-            let lat = 0;
-            let lon = 0;
-            // 위치 정보를 한 번만 가져옴
-            navigator.geolocation.getCurrentPosition(async (position) => {
-                // 현재 위도와 경도를 가져옴
-                lat = position.coords.latitude;
-                lon = position.coords.longitude;
-    
-                // 현재 위도와 경도를 기상청 예보 api 에 반영하기 위한 x,y 좌표를 구함
-                // object rs {x : , y : } return 확인 완료
-                const locationRs = getLocationXYData(lat, lon);
-    
-                // 현재 시간을 바탕으로 기상청 예보 api에 반영하기 위한 포멧팅된 시간을 구함
-                const dates = new Date();
-                const dateRs = getDateFormat(dates);
-    
-                // x, y 좌표 및 포멧팅된 시간 데이터를 바탕으로 기상청 단기 예보 데이터를 수집함
-                const rsdata = await getDayWeather(locationRs, dateRs);
-
-                if(rsdata.data && rsdata.data.response){
-                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === TMP(온도) 만 추출
-                    const lastTMPObject = rsdata.data.response.body.items.item.filter(item => item.category === "TMP").slice(-1)[0];
-                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === SKY(하늘 상태) 만 추출
-                    const lastSKYObject = rsdata.data.response.body.items.item.filter(item => item.category === "SKY").slice(-1)[0];
-                    // rsdata object 배열에서 마지막(가장 최신) object 중 category === PTY(강수 형태) 만 추출
-                    const lastPTYObject = rsdata.data.response.body.items.item.filter(item => item.category === "PTY").slice(-1)[0];
-
-                    // 날씨 데이터를 가져와 상태로 저장
-                    setWeather([lastTMPObject, lastSKYObject])
-
-                    // 날씨 상태에 따른 icon 부여
-                    // 맑음
-                    if(lastSKYObject.fcstValue === "1" || lastSKYObject.fcstValue === "2"){
-                        setWeather(["맑음", lastTMPObject.fcstValue]);
-                        setWeatherIcon("sun");
-                    }
-                    // 구름 많음 또는 흐림
-                    else if(lastSKYObject.fcstValue === "3" || lastSKYObject.fcstValue === "4"){
-                        // 강수 없음
-                        if(lastPTYObject.fcstValue === "0"){
-                            if(lastSKYObject.fcstValue === "3"){
-                                // clouds
-                                setWeather(["구름 많음", lastTMPObject.fcstValue]);
-                                setWeatherIcon("clouds");
-                            } else {
-                                // lowclouds
-                                setWeather(["흐림", lastTMPObject.fcstValue]);
-                                setWeatherIcon("lowcloud");
-                            }
-                        }
-                        // 비 또는 소나기
-                        else if(lastPTYObject.fcstValue === "1" || lastPTYObject.fcstValue === "4"){
-                            setWeather(["비", lastTMPObject.fcstValue]);
-                            setWeatherIcon("rain");
-                        }
-                        // 비/눈
-                        else if(lastPTYObject.fcstValue === "2"){
-                            setWeather(["비/눈", lastTMPObject.fcstValue]);
-                            setWeatherIcon("rainandsnow");
-                        }
-                        // 눈
-                        else if(lastPTYObject.fcstValue === "3"){
-                            setWeather(["눈", lastTMPObject.fcstValue]);
-                            setWeatherIcon("snow");
-                        }
-                    }
-                }
-            });
+            getWeatherData(setWeather, setWeatherIcon);
         }
     }, [isDetail]); 
 
     // 주소 카카오톡에 공유
-    const handleKakaoButton = () => {
+    const handleKakaoButton = (item) => {
         // 크롬 브라우저 > 개발자모드 > 모바일 설정 지원하지 않음
         if (window.Kakao && window.Kakao.Share) {
-        window.Kakao.Share.createDefaultButton({
-            container: '#kakaoShareBtn',
-            objectType: 'feed',
-            content: {
-            title: "공유하기",
-            description: "공유 설명" + '...',
-            imageUrl: weatherIcon,
-            link: {
-                // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
-                mobileWebUrl: window.location.href,
-                webUrl: window.location.href,
-            },
-            },
-            buttons: [
-            {
-                title: '보러가기',
+            window.Kakao.Share.createDefaultButton({
+                container: '#kakaoShareBtn',
+                objectType: 'feed',
+                content: {
+                title: "일정 공유",
+                description: item.content + "\n" + item.time,
+                imageUrl: weatherIcon,
                 link: {
-                mobileWebUrl: window.location.href,
-                webUrl: window.location.href,
+                    // [내 애플리케이션] > [플랫폼] 에서 등록한 사이트 도메인과 일치해야 함
+                    mobileWebUrl: window.location.href,
+                    webUrl: window.location.href,
+                },
+                },
+                buttons: [
+                {
+                    title: '보러가기',
+                    link: {
+                    mobileWebUrl: window.location.href,
+                    webUrl: window.location.href,
+                    }
                 }
-            }
-            ],
-            // 카카오톡 미설치 시 카카오톡 설치 경로이동
-            installTalk: true,
-        });
+                ],
+                // 카카오톡 미설치 시 카카오톡 설치 경로이동
+                installTalk: true,
+            });
 
-        } else {
-            console.error('Kakao SDK is not ready.');
-        }
+            } else {
+                console.error('Kakao SDK is not ready.');
+            }
     };
 
     // 일정 Detail 컨텐츠 렌더링
     const DetailRender = () => {
         const item = detailData;
-
         return (
         <>
             <DetailContainer>
                 <DetailTitleDiv>
                     {item.content}
                     <DetailIconDiv>
-                        <DetailIcon $type={item.type} />
-                        <KakaoIcon onClick={handleKakaoButton} id="kakaoShareBtn" />
-                    </DetailIconDiv>
+                        <KakaoIcon onClick={() => handleKakaoButton(item)} id="kakaoShareBtn" />
+                    </DetailIconDiv>              
                 </DetailTitleDiv>
                 <DetailDivLine />
                 <DetailTimeDiv>
