@@ -24,7 +24,7 @@ const StorySelect = styled(Select)`
 `;
 
 const Container = styled.div`
-  padding: 30px 15px 0;
+  padding: 30px 15px 10px;
 `;
 
 const options = [
@@ -55,9 +55,30 @@ const customStyles = {
 
 const Story = () => {
   const dataArr = [
-    { image: "", title: "초보자용 헬스 루틴", recommend: 31, comment: 6 },
-    { image: "", title: "식단 추천", recommend: 12, comment: 1 },
-    { image: "", title: "스트레칭의 중요성", recommend: 16, comment: 2 },
+    {
+      image: "",
+      title: "초보자용 헬스 루틴",
+      recommend: 31,
+      comment: 6,
+      nanoid: "123123",
+      view: 11,
+    },
+    {
+      image: "",
+      title: "식단 추천",
+      recommend: 12,
+      comment: 1,
+      nanoid: "1234",
+      view: 14,
+    },
+    {
+      image: "",
+      title: "스트레칭의 중요성",
+      recommend: 16,
+      comment: 2,
+      nanoid: "5678",
+      view: 20,
+    },
   ];
   const [data, setData] = useState(dataArr);
   const [select, setSelect] = useState("all");
@@ -65,9 +86,14 @@ const Story = () => {
   const selectChangeHandler = (option) => {
     setSelect(option.value);
     setData((prevData) => {
-      if (select === "comment") {
-      }
-      return [];
+      const sortedData = [...prevData].sort((a, b) => {
+        if (select === "all") {
+          return 0;
+        } else {
+          return b[select] - a[select];
+        }
+      });
+      return sortedData;
     });
   };
 
@@ -87,13 +113,15 @@ const Story = () => {
         />
       </Titlebox>
       <Container>
-        {dataArr.map((list, idx) => {
+        {data.map((list, idx) => {
           return (
             <Item
+              nanoid={list.nanoid}
               title={list.title}
               recommend={list.recommend}
               comment={list.comment}
               key={`storyList${idx}`}
+              setData={setData}
             />
           );
         })}

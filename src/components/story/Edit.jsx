@@ -129,7 +129,7 @@ const SubmitButton = styled.button`
   transition: background-color 1s;
 
   &:hover {
-    background-color: #f0586f;
+    background-color: var(--main-color);
   }
 `;
 
