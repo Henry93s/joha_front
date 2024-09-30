@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import Item from "./Item";
 import { fetchStoryData } from "../../api/story";
-
+ 
 const Titlebox = styled.div`
   display: flex;
   align-items: center;
