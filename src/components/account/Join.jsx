@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
-import { requestEmailCode, verifyEmailCode } from "../../api/auth";
+import { requestEmailCode, verifyEmailCode } from "../../api/emailAuth";
 import { createUser } from "../../api/user";
 // import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 

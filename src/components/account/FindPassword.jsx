@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { requestEmailCode, verifyEmailCode } from "../../api/auth";
+import { passwordRequestEmailCode, verifyEmailCode } from "../../api/emailAuth";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -98,7 +98,7 @@ const FindPassword = () => {
         e.preventDefault();
 
         try {
-            const response = await requestEmailCode(email);
+            const response = await passwordRequestEmailCode(email);
             if (response.status === 200) {
                 alert(response.data.message);
                 if (emailRequestBtn.current) {

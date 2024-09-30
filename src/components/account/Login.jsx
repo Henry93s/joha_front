@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "../../api/auth";
+import { loginUser } from "../../api/user";
 // import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const LoginInput = styled.input`
