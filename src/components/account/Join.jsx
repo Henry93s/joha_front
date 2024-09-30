@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { requestEmailCode, verifyEmailCode } from "../../api/auth";
+import { createUser } from "../../api/user";
 // import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const FlexDiv = styled.div`
@@ -138,31 +139,28 @@ const Join = () => {
     // 인증요청 클릭 시 처리 함수
     const onClickEmailCodeRequest = async () => {
         try {
-            const response = await axios.post("http://localhost:3002/users/verify", { email: formData.email });
+            const response = await requestEmailCode(formData.email);
             if (response.status === 201) {
                 alert("인증 코드 전송");
                 setIsEmailCode(true);
             }
         } catch (error) {
             // 서버에서 오는 오류 메시지를 받아서 처리
-            alert(error.response?.data?.message);
+            alert(error.response?.data?.message || "인증 요청 실패");
         }
     };
 
     // 인증확인 클릭 시 처리 함수
     const onClickCodeCheck = async () => {
         try {
-            const response = await axios.post("http://localhost:3002/users/verify/confirm", {
-                email: formData.email,
-                secret: formData.emailCode,
-            });
+            const response = await verifyEmailCode(formData.email, formData.emailCode);
             if (response.status === 200) {
                 alert("인증 확인 완료");
                 setIsCodeCheck(true);
             }
         } catch (error) {
             // 서버에서 오는 오류 메시지를 받아서 처리
-            alert(error.response?.data?.message);
+            alert(error.response?.data?.message || "인증 확인 실패");
         }
     };
 
@@ -260,10 +258,8 @@ const Join = () => {
                     formDataSend.append("photo", formData.profileImage);
                 }
 
-                // axios로 FormData 전송
-                const response = await axios.post("http://localhost:3002/users", formDataSend, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
+                // FormData 전송
+                const response = await createUser(formDataSend);
 
                 // 가입 성공 시
                 if (response.status === 201) {

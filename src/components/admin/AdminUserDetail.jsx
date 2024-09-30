@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import { fetchUserByEmail, deleteUserByEmail } from "../../api/user";
 
 const Container = styled.div`
     display: flex;
@@ -91,7 +91,7 @@ const AdminUserDetail = () => {
         const fetchUser = async () => {
             try {
                 // 이메일을 기반으로 회원 정보 가져오기
-                const response = await axios.post(`http://localhost:3002/users/email`, { email });
+                const response = await fetchUserByEmail(email);
                 console.log("user detail data", response.data);
                 setUser(response.data.data);
             } catch (error) {
@@ -106,7 +106,7 @@ const AdminUserDetail = () => {
     const onClickDeleteHandler = async () => {
         if (window.confirm("회원을 삭제하시겠습니까??")) {
             try {
-                await axios.delete("http://localhost:3002/users", { data: { email } });
+                await deleteUserByEmail(email);
                 alert("회원이 삭제되었습니다.");
                 navigate("/admin/userList");
             } catch (error) {

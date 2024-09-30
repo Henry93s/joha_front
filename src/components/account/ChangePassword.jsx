@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import { changePassword } from "../../api/user";
 // import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const ChangeInput = styled.input`
@@ -99,11 +99,7 @@ const ChangePassword = () => {
             // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
             // const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
-            const response = await axios.put("http://localhost:3002/users", {
-                email: location.state.email,
-                newPassword: password,
-            });
-
+            const response = await changePassword(location.state.email, password);
             if (response.status === 200) {
                 alert("비밀번호가 성공적으로 변경되었습니다.");
                 navigate("/login");

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { loginUser } from "../../api/auth";
 // import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const LoginInput = styled.input`
@@ -66,11 +66,7 @@ const Login = () => {
             // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
             // const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
-            const response = await axios.post("http://localhost:3002/login", {
-                // 쿠키를 포함시키기 위해 설정
-                email: email,
-                password: password,
-            });
+            const response = await loginUser(email, password);
             if (response.status === 200) {
                 localStorage.setItem("is_logined", "true");
                 navigate("/");
