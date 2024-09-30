@@ -1,9 +1,13 @@
 import styled from "styled-components";
 import { ReactComponent as Recommend } from "../../assets/icons/recommend.svg"; // SVG 파일을 컴포넌트로 import
 import { ReactComponent as Comment } from "../../assets/icons/comment.svg"; // SVG 파일을 컴포넌트로 import
+import { Link } from "react-router-dom";
+import { deleteStoryData, editStoryData } from "../../api/story";
 
-const List = styled.div`
-  padding-bottom: 20px;
+const List = styled(Link)`
+  display: block;
+  margin-bottom: 20px;
+  color: initial;
 `;
 
 const ThumbNailBox = styled.div`
@@ -56,9 +60,21 @@ const DeleteBtn = styled.button`
   text-decoration: underline;
 `;
 
-const Item = ({ image, title, recommend, comment }) => {
+const Item = ({ image, title, recommend, comment, nanoid, setData }) => {
+  const editHandler = (e) => {
+    e.preventDefault();
+    const resultData = editStoryData();
+    setData(resultData);
+  };
+
+  const deleteHandler = (e) => {
+    e.preventDefault();
+    const resultData = deleteStoryData();
+    setData(resultData);
+  };
+
   return (
-    <List>
+    <List to={`/story/view/${nanoid}`}>
       <ThumbNailBox>
         <img src={image} alt={title} />
       </ThumbNailBox>
@@ -77,8 +93,12 @@ const Item = ({ image, title, recommend, comment }) => {
           </IconBox>
         </div>
         <div>
-          <EditBtn type="button">수정</EditBtn>
-          <DeleteBtn type="button">삭제</DeleteBtn>
+          <EditBtn type="button" onClick={editHandler}>
+            수정
+          </EditBtn>
+          <DeleteBtn type="button" onClick={deleteHandler}>
+            삭제
+          </DeleteBtn>
         </div>
       </InfoBox>
     </List>

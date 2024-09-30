@@ -9,11 +9,11 @@ import heart from "../../assets/icons/heart.png";
 import schedule from "../../assets/icons/schedule.png";
 import myclass from "../../assets/icons/myclass.png";
 import story from "../../assets/icons/story.png";
-import search_color from "../../assets/icons/search_color.png"
-import heart_color from "../../assets/icons/heart_color.png"
-import schedule_color from "../../assets/icons/schedule_color.png"
-import myclass_color from "../../assets/icons/myclass_color.png"
-import story_color from "../../assets/icons/story_color.png"
+import search_color from "../../assets/icons/search_color.png";
+import heart_color from "../../assets/icons/heart_color.png";
+import schedule_color from "../../assets/icons/schedule_color.png";
+import myclass_color from "../../assets/icons/myclass_color.png";
+import story_color from "../../assets/icons/story_color.png";
 
 const FooterDiv = styled.div`
   position: fixed;
@@ -51,28 +51,28 @@ const MenuItemTopBorder = styled.div<MenuProps>`
   width: 70px;
   position: absolute;
   border-top: ${({ $linked, $menu }) =>
-    ($linked === $menu ? '2.5px solid var(--main-color)' 
-                              : 'none')};
-`
+    $linked === $menu ? "2.5px solid var(--main-color)" : "none"};
+`;
 
 const MenuLabel = styled.div<MenuProps>`
   font-size: 12px;
   padding-top: 3px;
-  color: ${({ $linked, $menu }) => ($linked === $menu ? "var(--main-color)" : "inherit")};
+  color: ${({ $linked, $menu }) =>
+    $linked === $menu ? "var(--main-color)" : "inherit"};
 `;
 
 // 이미지 매핑 객체 생성
 // 문자열 키에 대한 타입 유효성 검사 생략 (as const - as keyof typeof imageMap~)
 const imageMap = {
   "/search": search,
-  "/heart": heart,
+  "/wish": heart,
   "/schedule": schedule,
   "/myclass": myclass,
   "/story": story,
 } as const;
 const imageMapColor = {
   "/search": search_color,
-  "/heart": heart_color,
+  "/wish": heart_color,
   "/schedule": schedule_color,
   "/myclass": myclass_color,
   "/story": story_color,
@@ -84,8 +84,11 @@ const MenuImgDiv = styled.div<MenuProps>`
   background-size: contain;
   background-repeat: no-repeat;
   background-image: ${({ $linked, $menu }) =>
-    `url(${ $linked === $menu ? imageMapColor[$linked as keyof typeof imageMapColor] 
-                              : imageMap[$linked as keyof typeof imageMap] })`};
+    `url(${
+      $linked === $menu
+        ? imageMapColor[$linked as keyof typeof imageMapColor]
+        : imageMap[$linked as keyof typeof imageMap]
+    })`};
 `;
 
 const FooterMenu = () => {
@@ -96,21 +99,20 @@ const FooterMenu = () => {
 
   useEffect(() => {
     setMenu((current) => {
-      const newMenu = {...current};
+      const newMenu = { ...current };
       const path = location.pathname;
-      if(path === "/"){
-        newMenu.path = "/search"
+      if (path === "/") {
+        newMenu.path = "/";
       } else {
         newMenu.path = path;
       }
       return newMenu;
     });
-  },[location]);
-
+  }, [location]);
 
   const items = [
-    { name: "검색", linked: "/"  },
-    { name: "찜 목록", linked: "/heart" },
+    { name: "검색", linked: "/search" },
+    { name: "찜 목록", linked: "/wish" },
     { name: "스케줄", linked: "/schedule" },
     { name: "나의 수업", linked: "/myclass" },
     { name: "스토리", linked: "/story" },
@@ -119,10 +121,21 @@ const FooterMenu = () => {
   return (
     <FooterDiv>
       {items.map(({ name, linked }) => (
-        <MenuItem key={name} to={linked} >
-          <MenuItemTopBorder $linked={name === "검색" ? "/search" : linked} $menu={footerMenu.path} />
-          <MenuImgDiv $linked={name === "검색" ? "/search" : linked} $menu={footerMenu.path} />
-          <MenuLabel $linked={name === "검색" ? "/search" : linked} $menu={footerMenu.path}>{name}</MenuLabel>
+        <MenuItem key={name} to={linked}>
+          <MenuItemTopBorder
+            $linked={name === "검색" ? "/search" : linked}
+            $menu={footerMenu.path}
+          />
+          <MenuImgDiv
+            $linked={name === "검색" ? "/search" : linked}
+            $menu={footerMenu.path}
+          />
+          <MenuLabel
+            $linked={name === "검색" ? "/search" : linked}
+            $menu={footerMenu.path}
+          >
+            {name}
+          </MenuLabel>
         </MenuItem>
       ))}
     </FooterDiv>
