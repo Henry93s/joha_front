@@ -21,39 +21,38 @@ import StoryViewPage from "./pages/StoryViewPage";
 import StoryPostPage from "./pages/StoryPostPage";
 import WishListPage from "./pages/WishListPage";
 import StoryEditPage from "./pages/StoryEditPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="/inquiry" element={<InquiryPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/join" element={<JoinPage />} />
-          <Route path="/joinEnd" element={<JoinEndPage />} />
-          <Route path="/findId" element={<FindIdPage />} />
-          <Route path="/findPassword" element={<FindPasswordPage />} />
-          <Route path="/ChangePassword" element={<ChangePasswordPage />} />
-          <Route path="/schedule" element={<SchedulePage />} />
-          <Route path="/admin" element={<AdminIntroPage />} />
-          <Route path="/admin/userList" element={<AdminUserListPage />} />
-          <Route
-            path="/admin/userList/:email"
-            element={<AdminUserDetailPage />}
-          />
-          <Route path="/search" element={<SearchPage />} />
-          <Route path="/lesson_search" element={<LessonSearchPage />} />
-          <Route path="/story" element={<StoryPage />} />
-          <Route path="/story/edit" element={<StoryEditPage />} />
-          <Route path="/story/view" element={<StoryViewPage />} />
-          <Route path="/story/post" element={<StoryPostPage />} />
-          <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
-          <Route path="/wish" element={<WishListPage />} />
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/inquiry" element={<InquiryPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/join" element={<JoinPage />} />
+                    <Route path="/joinEnd" element={<JoinEndPage />} />
+                    <Route path="/findId" element={<FindIdPage />} />
+                    <Route path="/findPassword" element={<FindPasswordPage />} />
+                    <Route path="/ChangePassword" element={<ChangePasswordPage />} />
+                    <Route path="/schedule" element={<SchedulePage />} />
+                    <Route path="/admin" element={<AdminIntroPage />} />
+                    <Route path="/admin/userList" element={<AdminUserListPage />} />
+                    <Route path="/admin/userList/:email" element={<AdminUserDetailPage />} />
+                    <Route path="/search" element={<SearchPage />} />
+                    <Route path="/lesson_search" element={<LessonSearchPage />} />
+                    <Route path="/story" element={<StoryPage />} />
+                    <Route path="/story/edit" element={<StoryEditPage />} />
+                    <Route path="/story/view" element={<StoryViewPage />} />
+                    <Route path="/story/post" element={<StoryPostPage />} />
+                    <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
+                    <Route path="/wish" element={<WishListPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                </Routes>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;
