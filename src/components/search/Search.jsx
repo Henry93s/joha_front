@@ -32,11 +32,12 @@ const Search = () => {
 
   useEffect(() => {
     // 로컬스토리지에 저장된 최근 검색어 가져오기
-    const searchList = localStorage.getItem("recentSearch");
+    const searchList = getExpireItem("recentSearch");
 
     // 로컬스토리지에 최근 검색어 있을 경우 상태에 반영
+    console.log(searchList);
     if (searchList) {
-      setSearchArray(JSON.parse(searchList));
+      setSearchArray(searchList);
     }
   }, []);
 
@@ -57,10 +58,8 @@ const Search = () => {
 
     setSearchArray((arr) => {
       const currentDate = new Date();
-      const nextDate = new Date(currentDate);
       // 만료 기간 설정, 하루 후
-      nextDate.setDate(currentDate.getDate() + 1); // 하루 후로 설정
-
+      const nextDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000); // 하루 후로 설정
       // 중복된 검색어를 제외하고 새로운 배열 생성
       const newArr = arr.filter((obj) => obj.value !== selectedOption.value);
 
@@ -84,16 +83,19 @@ const Search = () => {
     });
   };
 
+  // 현재 시간과 최근 검색어 검색 시간 비교하여
+  // 검색 1일 후 최근 검색어 배열에서 삭제되도록 함
   const getExpireItem = (key) => {
     const itemStr = localStorage.getItem(key);
-
     if (!itemStr) return null;
     const itemArr = JSON.parse(itemStr);
-    const currentDate = new Date();
-
-    return itemArr.filter((item) => {
-      return currentDate.getDate() >= item.expires;
+    const currentDate = new Date().getTime();
+    const resultArr = itemArr.filter((item) => {
+      const itemExpires = new Date(item.expires).getTime();
+      return currentDate < itemExpires;
     });
+
+    return resultArr;
   };
 
   const handleDelete = (e, word) => {
