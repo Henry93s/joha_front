@@ -14,10 +14,10 @@ import "swiper/css/pagination";
 import styled from "styled-components";
 import loginState from "../../atoms/loginState";
 import loading from "../../assets/icons/loading.png";
-import arrow from "../../assets/icons/arrow.png";
 import kakaoBtnImg from "../../assets/icons/kakao_btn.png";
 import { useScript } from "../../api/hooks";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import Comment from "../item/Comment";
 
 const SwiperDiv = styled.div`
   position: relative;
@@ -177,56 +177,7 @@ const CommentDiv = styled.div`
     font-size: 16px;
   }
 `;
-const Comment = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 15px 0;
-  border-bottom: 1px solid #ddd;
-  & p {
-    font-size: 16px;
-    font-weight: bold;
-    padding-bottom: 4px;
-  }
-  & .content {
-    font-size: 14px;
-  }
-`;
-const Profile = styled.div`
-  border-radius: 10px;
-  width: 11vw;
-  height: 11vw;
-  max-width: 100px;
-  max-height: 100px;
-  overflow: hidden;
-  background: #eee;
-  & img {
-    width: 100%;
-  }
-`;
-const LeftBox = styled.div`
-  width: 11vw;
-  max-width: 100px;
-`;
-const RightBox = styled.div`
-  width: 89vw;
-  max-width: 600px;
-`;
-const Reply = styled(Comment)`
-  background: #f8f8f8;
-  padding-left: 40px;
-  position: relative;
-  &::before {
-    content: "";
-    width: 30px;
-    height: 30px;
-    background: url(${arrow}) no-repeat 50% 50%;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translate(0, -50%) rotate(-45deg);
-  }
-`;
+
 const InputTextDiv = styled.div`
   display: flex;
   padding-top: 20px;
@@ -568,28 +519,7 @@ const View = () => {
 
         <CommentDiv>
           <h2>댓글</h2>
-          <Comment>
-            <LeftBox>
-              <Profile></Profile>
-            </LeftBox>
-            <RightBox>
-              <p>박보은</p>
-              <div className="content">
-                안녕하세요!안녕하세요!안녕하세요!안녕하세요!
-              </div>
-            </RightBox>
-          </Comment>
-          <Reply>
-            <LeftBox>
-              <Profile></Profile>
-            </LeftBox>
-            <RightBox>
-              <p>박보은</p>
-              <div className="content">
-                안녕하세요!안녕하세요!안녕하세요!안녕하세요!dd
-              </div>
-            </RightBox>
-          </Reply>
+          <Comment name={""} content={""} />
         </CommentDiv>
         <InputTextDiv>
           <textarea></textarea>
