@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { ReactComponent as ArrowIcon } from "../../assets/icons/arrow.svg";
 import { useNavigate } from "react-router-dom";
-import loginState from "../../atoms/loginState";
-import { useRecoilValue } from "recoil";
+// import loginState from "../../atoms/loginState";
+// import { useRecoilValue } from "recoil";
 import { logoutUser } from "../../api/logoutUser";
 import { deleteUser, fetchUserData } from "../../api/profile";
 
@@ -105,7 +105,8 @@ const ProfileLogout = styled.button`
 `;
 
 const Profile = () => {
-    const user = useRecoilValue(loginState);
+    // const user = useRecoilValue(loginState);
+    const [user, setUser] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -118,16 +119,22 @@ const Profile = () => {
 
         // if (user.is_logined) {
         const getUserData = async () => {
+            const email = localStorage.getItem("email"); // 로컬스토리지에서 로그인된 사용자의 email을 가져옴
             try {
-                const response = await fetchUserData(user.email);
-                console.log("user data", response);
+                if (email) {
+                    const response = await fetchUserData(email); // 이메일을 사용해 사용자 정보 요청
+                    setUser(response.data);
+                    console.log("user data", response);
+                } else {
+                    console.error("이메일 정보가 없습니다.");
+                }
             } catch (error) {
                 console.error("유저의 데이터를 찾을 수 없습니다.", error);
             }
         };
         getUserData();
         // }
-    }, [user]);
+    }, [navigate]);
 
     /** 개인정보 수정 클릭 시 */
     const onClickProfileEditHandler = () => {
