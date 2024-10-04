@@ -3,7 +3,9 @@ import axios from "axios";
 /** 유저 데이터 가져오기 (프로필, 개인정보 수정 페이지) */
 export const fetchUserData = async (email) => {
     try {
-        const response = await axios.post(`http://localhost:3002/users/email`, { email });
+        const response = await axios.get(`http://localhost:3002/users`, {
+            params: { email },
+        });
         return response.data;
     } catch (error) {
         console.error("유저의 데이터를 찾을 수 없습니다.", error);

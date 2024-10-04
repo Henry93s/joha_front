@@ -119,22 +119,31 @@ const Profile = () => {
 
         // if (user.is_logined) {
         const getUserData = async () => {
-            const email = localStorage.getItem("email"); // 로컬스토리지에서 로그인된 사용자의 email을 가져옴
+            const email = localStorage.getItem("email");
+
+            if (!email) {
+                console.error("로그인된 이메일 정보가 없습니다.");
+                return;
+            }
+
             try {
-                if (email) {
-                    const response = await fetchUserData(email); // 이메일을 사용해 사용자 정보 요청
-                    setUser(response.data);
-                    console.log("user data", response);
+                const response = await fetchUserData(email);
+                const userData = Array.isArray(response) ? response.find((user) => user.email === email) : response;
+
+                if (userData) {
+                    setUser(userData);
+                    console.log("로그인 user data", userData);
                 } else {
-                    console.error("이메일 정보가 없습니다.");
+                    console.error("로그인한 사용자 정보를 찾을 수 없습니다.");
                 }
             } catch (error) {
-                console.error("유저의 데이터를 찾을 수 없습니다.", error);
+                console.error("유저 데이터를 가져오는 데 실패했습니다.", error);
             }
         };
+
         getUserData();
         // }
-    }, [navigate]);
+    }, []);
 
     /** 개인정보 수정 클릭 시 */
     const onClickProfileEditHandler = () => {
@@ -175,35 +184,37 @@ const Profile = () => {
 
     return (
         <ProfileContainer>
-            <ProfileContentWrapper>
-                <ProfileHeader>
-                    <ProfileImageWrapper>
-                        {user.photo ? <ProfileImage src={user.photo} alt="Profile" /> : <DefaultProfileIcon />}
-                    </ProfileImageWrapper>
-                    <ProfileDetail>
-                        <ProfileName>{user.name}</ProfileName>
-                        <ProfileEmail>{user.email}</ProfileEmail>
-                    </ProfileDetail>
-                </ProfileHeader>
+            {user && (
+                <ProfileContentWrapper>
+                    <ProfileHeader>
+                        <ProfileImageWrapper>
+                            {user.photo ? <ProfileImage src={user.photo} alt="Profile" /> : <DefaultProfileIcon />}
+                        </ProfileImageWrapper>
+                        <ProfileDetail>
+                            <ProfileName>{user.name}</ProfileName>
+                            <ProfileEmail>{user.email}</ProfileEmail>
+                        </ProfileDetail>
+                    </ProfileHeader>
 
-                <ProfileSection onClick={onClickProfileEditHandler}>
-                    <ProfileLabel>개인정보 수정</ProfileLabel>
-                    <ProfileArrowButton>
-                        <ArrowIcon />
-                    </ProfileArrowButton>
-                </ProfileSection>
+                    <ProfileSection onClick={onClickProfileEditHandler}>
+                        <ProfileLabel>개인정보 수정</ProfileLabel>
+                        <ProfileArrowButton>
+                            <ArrowIcon />
+                        </ProfileArrowButton>
+                    </ProfileSection>
 
-                <ProfileSection onClick={onClickInquiryHandler}>
-                    <ProfileLabel>1:1 고객센터</ProfileLabel>
-                    <ProfileArrowButton>
-                        <ArrowIcon />
-                    </ProfileArrowButton>
-                </ProfileSection>
+                    <ProfileSection onClick={onClickInquiryHandler}>
+                        <ProfileLabel>1:1 고객센터</ProfileLabel>
+                        <ProfileArrowButton>
+                            <ArrowIcon />
+                        </ProfileArrowButton>
+                    </ProfileSection>
 
-                <ProfileSection>
-                    <ProfileDelete onClick={onClickDeleteHandler}>회원 탈퇴</ProfileDelete>
-                </ProfileSection>
-            </ProfileContentWrapper>
+                    <ProfileSection>
+                        <ProfileDelete onClick={onClickDeleteHandler}>회원 탈퇴</ProfileDelete>
+                    </ProfileSection>
+                </ProfileContentWrapper>
+            )}
 
             <ProfileLogout onClick={onclickLogoutHandler}>로그아웃</ProfileLogout>
         </ProfileContainer>
