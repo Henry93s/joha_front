@@ -22,6 +22,7 @@ import StoryPostPage from "./pages/StoryPostPage";
 import WishListPage from "./pages/WishListPage";
 import StoryEditPage from "./pages/StoryEditPage";
 import ProfilePage from "./pages/ProfilePage";
+import ProfileEditPage from "./pages/ProfileEditPage";
 
 function App() {
     return (
@@ -49,6 +50,7 @@ function App() {
                     <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
                     <Route path="/wish" element={<WishListPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile/edit/:email" element={<ProfileEditPage />} />
                 </Routes>
             </BrowserRouter>
         </div>
