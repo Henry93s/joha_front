@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { ReactComponent as ArrowIcon } from "../../assets/icons/arrow.svg";
+import { useNavigate } from "react-router-dom";
+import loginState from "../../atoms/loginState";
+import { useRecoilValue } from "recoil";
+import { logoutUser } from "../../api/logoutUser";
+import { deleteUser, fetchUserData } from "../../api/profile";
 
 const ProfileContainer = styled.div`
     display: flex;
@@ -100,28 +105,88 @@ const ProfileLogout = styled.button`
 `;
 
 const Profile = () => {
-    const userPhoto = "";
+    const user = useRecoilValue(loginState);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // is_logined가 false인 경우 로그인 페이지로 이동하는 코드 나중에 주석 해제
+        // 프로필 페이지 말고 Header에서 프로필페이지 이동 클릭 시에 코드 추가해도 가능할 것 같음.
+
+        // if (!user.is_logined) {
+        //     navigate("/login");
+        // }
+
+        // if (user.is_logined) {
+        const getUserData = async () => {
+            try {
+                const response = await fetchUserData(user.email);
+                console.log("user data", response);
+            } catch (error) {
+                console.error("유저의 데이터를 찾을 수 없습니다.", error);
+            }
+        };
+        getUserData();
+        // }
+    }, [user]);
+
+    /** 개인정보 수정 클릭 시 */
+    const onClickProfileEditHandler = () => {
+        navigate(`/profile/edit/${user.email}`);
+    };
+
+    /** 1:1 고객센터 클릭 시 */
+    const onClickInquiryHandler = () => {
+        navigate("/inquiry");
+    };
+
+    /** 회원 탈퇴 클릭 시 */
+    const onClickDeleteHandler = async () => {
+        if (window.confirm("정말 탈퇴하시겠습니까?")) {
+            try {
+                await deleteUser(user.email);
+
+                // 탈퇴 성공 후 홈 페이지로 이동
+                navigate("/");
+            } catch (error) {
+                console.error("회원 탈퇴에 실패했습니다.", error);
+            }
+        }
+    };
+
+    /** 로그아웃 클릭 시 */
+    const onclickLogoutHandler = async () => {
+        try {
+            const response = await logoutUser();
+            if (response && response.status === 200) {
+                localStorage.setItem("is_logined", "false");
+                navigate("/");
+            }
+        } catch (error) {
+            console.error("로그아웃에 실패했습니다.", error);
+        }
+    };
+
     return (
         <ProfileContainer>
             <ProfileContentWrapper>
                 <ProfileHeader>
                     <ProfileImageWrapper>
-                        {userPhoto ? <ProfileImage src={userPhoto} alt="Profile" /> : <DefaultProfileIcon />}
+                        {user.photo ? <ProfileImage src={user.photo} alt="Profile" /> : <DefaultProfileIcon />}
                     </ProfileImageWrapper>
                     <ProfileDetail>
-                        <ProfileName>홍길동</ProfileName>
-                        <ProfileEmail>test.test.com</ProfileEmail>
+                        <ProfileName>{user.name}</ProfileName>
+                        <ProfileEmail>{user.email}</ProfileEmail>
                     </ProfileDetail>
                 </ProfileHeader>
 
-                <ProfileSection>
+                <ProfileSection onClick={onClickProfileEditHandler}>
                     <ProfileLabel>개인정보 수정</ProfileLabel>
                     <ProfileArrowButton>
                         <ArrowIcon />
                     </ProfileArrowButton>
                 </ProfileSection>
 
-                <ProfileSection>
+                <ProfileSection onClick={onClickInquiryHandler}>
                     <ProfileLabel>1:1 고객센터</ProfileLabel>
                     <ProfileArrowButton>
                         <ArrowIcon />
@@ -129,11 +194,11 @@ const Profile = () => {
                 </ProfileSection>
 
                 <ProfileSection>
-                    <ProfileDelete>회원 탈퇴</ProfileDelete>
+                    <ProfileDelete onClick={onClickDeleteHandler}>회원 탈퇴</ProfileDelete>
                 </ProfileSection>
             </ProfileContentWrapper>
 
-            <ProfileLogout>로그아웃</ProfileLogout>
+            <ProfileLogout onClick={onclickLogoutHandler}>로그아웃</ProfileLogout>
         </ProfileContainer>
     );
 };
