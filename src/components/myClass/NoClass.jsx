@@ -14,7 +14,6 @@ const NoClass = () => {
         </No.Description>
         
       </No.Content>
-      <No.ImageContainer />
     </No.Container>
   );
 };

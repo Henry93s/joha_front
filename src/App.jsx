@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
 import "./App.css";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import MainPage from "../src/pages/MainPage";

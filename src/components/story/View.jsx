@@ -17,7 +17,7 @@ import loading from "../../assets/icons/loading.png";
 import kakaoBtnImg from "../../assets/icons/kakao_btn.png";
 import { useScript } from "../../api/hooks";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import Comment from "../item/Comment";
+// import Comment from "../item/Comment";
 
 const SwiperDiv = styled.div`
   position: relative;

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import houseImg from "../../assets/images/house.jpg";
 
 export const Container = styled.div`
   border: solid 1px #bebcbc;
@@ -24,20 +23,6 @@ export const Content = styled.div`
   @media (min-width: 500px) {
     width: 50%;
     justify-content: center;
-  }
-`;
-export const ImageContainer = styled.div`
-  height: 0;
-  opacity: 0;
-
-  @media (min-width: 500px) {
-    background-image: url(${houseImg});
-    background-size: cover;
-    background-position: center;
-    border-radius: 0 10px 10px 0;
-    width: 50%;
-    height: 320px;
-    opacity: 1;
   }
 `;
 export const NoReserveImg = styled.img`
