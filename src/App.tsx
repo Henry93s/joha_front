@@ -21,6 +21,7 @@ import StoryViewPage from "./pages/StoryViewPage";
 import StoryPostPage from "./pages/StoryPostPage";
 import WishListPage from "./pages/WishListPage";
 import StoryEditPage from "./pages/StoryEditPage";
+import ClassViewPage from "./pages/ClassViewPage";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
           <Route path="/story/post" element={<StoryPostPage />} />
           <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
           <Route path="/wish" element={<WishListPage />} />
+          <Route path="/class/view" element={<ClassViewPage />} />
         </Routes>
       </BrowserRouter>
     </div>
