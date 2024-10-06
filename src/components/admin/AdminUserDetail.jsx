@@ -82,7 +82,7 @@ const AdminUserDetail = () => {
         detail_address: "",
         name: "",
         phone: "",
-        is_admin: "",
+        is_admin: false,
         create_at: "",
         update_at: "",
     });
@@ -93,7 +93,7 @@ const AdminUserDetail = () => {
                 // 이메일을 기반으로 회원 정보 가져오기
                 const response = await fetchUserByEmail(email);
                 console.log("user detail data", response.data);
-                setUser(response.data.data);
+                setUser(response.data);
             } catch (error) {
                 console.error("회원 정보 불러오기 실패", error);
             }
@@ -119,10 +119,7 @@ const AdminUserDetail = () => {
         <Container>
             <ProfileIconWrapper>
                 {user.photo && user.photo !== "notFoundImage" ? (
-                    <ProfileImage
-                        src={user.photo}
-                        alt="Profile"
-                    />
+                    <ProfileImage src={user.photo} alt="Profile" />
                 ) : (
                     <DefaultProfileIcon />
                 )}
@@ -168,10 +165,7 @@ const AdminUserDetail = () => {
                 <Value>{user.update_at}</Value>
             </ProfileItem>
 
-            <Button
-                type="button"
-                onClick={onClickDeleteHandler}
-            >
+            <Button type="button" onClick={onClickDeleteHandler}>
                 회원 삭제
             </Button>
         </Container>
