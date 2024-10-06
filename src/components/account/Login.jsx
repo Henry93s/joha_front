@@ -68,6 +68,7 @@ const Login = () => {
 
             const response = await loginUser(email, password);
             if (response.status === 200) {
+                localStorage.setItem("email", email);
                 localStorage.setItem("is_logined", "true");
                 navigate("/");
             }
@@ -78,12 +79,7 @@ const Login = () => {
 
     return (
         <form onSubmit={onSubmitHandler}>
-            <LoginInput
-                type="email"
-                placeholder="이메일"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+            <LoginInput type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
             <LoginInput
                 type="password"
                 placeholder="비밀번호"

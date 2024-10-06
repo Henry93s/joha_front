@@ -24,6 +24,8 @@ import StoryEditPage from "./pages/StoryEditPage";
 import ClassUpload from "./pages/ClassUpload";
 import MyClassesPage from "./pages/MyClassesPage";
 import { AnimatePresence } from "framer-motion";
+import ProfilePage from "./pages/ProfilePage";
+import ProfileEditPage from "./pages/ProfileEditPage";
 
 function App() {
   return (
@@ -42,10 +44,7 @@ function App() {
                 <Route path="/schedule" element={<SchedulePage />} />
                 <Route path="/admin" element={<AdminIntroPage />} />
                 <Route path="/admin/userList" element={<AdminUserListPage />} />
-                <Route
-                    path="/admin/userList/:email"
-                    element={<AdminUserDetailPage />}
-                />
+                <Route path="/admin/userList/:email" element={<AdminUserDetailPage />} />
                 <Route path="/search" element={<SearchPage />} />
                 <Route path="/lesson_search" element={<LessonSearchPage />} />
                 <Route path="/story" element={<StoryPage />} />
@@ -54,6 +53,8 @@ function App() {
                 <Route path="/story/post" element={<StoryPostPage />} />
                 <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
                 <Route path="/wish" element={<WishListPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/profile/edit/:email" element={<ProfileEditPage />} />
                 <Route path="/myclass" element={<MyClassesPage />} />
                 <Route path="/upload" element={<ClassUpload />} />
             </Routes>
