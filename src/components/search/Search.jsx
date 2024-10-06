@@ -1,81 +1,16 @@
 import { useState, useEffect } from "react";
-import styled from "styled-components";
-import Select from "react-select";
 import { Link } from "react-router-dom";
-import { ReactComponent as Close } from "../../assets/icons/close.svg"; // SVG 파일을 컴포넌트로 import
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg"; // SVG 파일을 컴포넌트로 import
-
-const Container = styled.div`
-  padding: 10px 15px 0;
-`;
-const SearchCont = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const SearchButton = styled.button`
-  width: 50px;
-  background: none;
-`;
-const SearchSelect = styled(Select)`
-  border-radius: 10px;
-  background: #f1f1f1;
-  border: none !important;
-  & input {
-    height: 38px;
-  }
-  width: calc(100% - 50px);
-`;
-const customStyles = {
-  dropdownIndicator: (provided) => ({
-    ...provided,
-    display: "none", // 화살표 제거
-  }),
-  indicatorSeparator: (provided) => ({
-    ...provided,
-    display: "none", // 화살표 옆의 구분선 제거
-  }),
-  control: (provided) => ({
-    ...provided,
-    backgroundColor: "#f1f1f1", // 배경색 변경
-    border: 0,
-    "border-radius": "15px",
-  }),
-  menu: (provided) => ({
-    ...provided,
-    backgroundColor: "#f1f1f1", // 드롭다운 배경색 변경
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected ? "#b3d4fc" : "#f0f0f0", // 선택된 옵션과 비선택 옵션 배경색
-    color: state.isSelected ? "#000" : "#333",
-    "&:hover": {
-      backgroundColor: "#e0e0e0", // 옵션 위에 마우스를 올렸을 때 배경색
-    },
-  }),
-};
-
-const Title = styled.h2`
-  font-size: 20px;
-  padding-top: 40px;
-`;
-const RecentArea = styled.ul`
-  padding-top: 10px;
-  & li a {
-    display: flex;
-    align-items: center;
-    padding-bottom: 2px;
-    font-size: 16px;
-    color: #999;
-  }
-`;
-const StyledClose = styled(Close)`
-  width: 16px;
-  height: 16px;
-  & path {
-    stroke: #999;
-  }
-  margin-left: 5px;
-`;
+import {
+  Container,
+  SearchCont,
+  SearchButton,
+  CustomStyles,
+  SearchTitle,
+  RecentArea,
+  StyledClose,
+  SearchSelect,
+} from "./SearchStyles";
 
 const Search = () => {
   const options = [
@@ -97,11 +32,12 @@ const Search = () => {
 
   useEffect(() => {
     // 로컬스토리지에 저장된 최근 검색어 가져오기
-    const searchList = localStorage.getItem("recentSearch");
+    const searchList = getExpireItem("recentSearch");
 
     // 로컬스토리지에 최근 검색어 있을 경우 상태에 반영
+    console.log(searchList);
     if (searchList) {
-      setSearchArray(JSON.parse(searchList));
+      setSearchArray(searchList);
     }
   }, []);
 
@@ -121,26 +57,50 @@ const Search = () => {
     }
 
     setSearchArray((arr) => {
-      let newArr = [];
-      newArr = arr.filter((word) => {
-        if (word !== selectedOption.value) {
-          return word;
-        }
-      });
-      // 중복 검색어를 앞에 노출되게 작업
-      newArr.unshift(selectedOption.value);
+      const currentDate = new Date();
+      // 만료 기간 설정, 하루 후
+      const nextDate = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000); // 하루 후로 설정
+      // 중복된 검색어를 제외하고 새로운 배열 생성
+      const newArr = arr.filter((obj) => obj.value !== selectedOption.value);
 
-      const setArray = new Set(newArr);
-      return [...setArray];
+      // 검색어 추가
+      newArr.unshift({ value: selectedOption.value, expires: nextDate });
+
+      // 중복값 제거
+      const valueSet = new Set();
+      const setArray = newArr.filter((item) => {
+        if (!valueSet.has(item.value)) {
+          valueSet.add(item.value);
+          return true; // 필터링된 결과에 포함
+        }
+        return false; // 중복된 경우 제외
+      });
+
+      // 로컬스토리지에 검색어와 만료 기간 저장
+      localStorage.setItem("recentSearch", JSON.stringify(setArray));
+
+      return setArray; // 업데이트된 배열 반환
     });
-    localStorage.setItem("recentSearch", JSON.stringify(searchArray));
-    console.log(searchArray);
-    console.log(localStorage.getItem("recentSearch"));
+  };
+
+  // 현재 시간과 최근 검색어 검색 시간 비교하여
+  // 검색 1일 후 최근 검색어 배열에서 삭제되도록 함
+  const getExpireItem = (key) => {
+    const itemStr = localStorage.getItem(key);
+    if (!itemStr) return null;
+    const itemArr = JSON.parse(itemStr);
+    const currentDate = new Date().getTime();
+    const resultArr = itemArr.filter((item) => {
+      const itemExpires = new Date(item.expires).getTime();
+      return currentDate < itemExpires;
+    });
+
+    return resultArr;
   };
 
   const handleDelete = (e, word) => {
     e.preventDefault();
-    const filteredArray = searchArray.filter((item) => item !== word);
+    const filteredArray = searchArray.filter((item) => item.value !== word);
     setSearchArray(filteredArray);
     localStorage.setItem("recentSearch", JSON.stringify(filteredArray));
   };
@@ -151,7 +111,7 @@ const Search = () => {
       <SearchCont>
         <SearchSelect
           options={options}
-          styles={customStyles}
+          styles={CustomStyles}
           placeholder=""
           onChange={handleChange}
         />
@@ -162,16 +122,18 @@ const Search = () => {
 
       {searchArray.length > 0 && (
         <>
-          <Title>최근 검색어</Title>
+          <SearchTitle>최근 검색어</SearchTitle>
           <RecentArea>
             {searchArray.map((word, idx) => {
               return (
                 <li key={`keyword${idx}`}>
                   <Link
-                    to={`/lesson_search?keyword=${encodeURIComponent(word)}`}
+                    to={`/lesson_search?keyword=${encodeURIComponent(
+                      word.value
+                    )}`}
                   >
-                    {word}
-                    <StyledClose onClick={(e) => handleDelete(e, word)} />
+                    {word.value}
+                    <StyledClose onClick={(e) => handleDelete(e, word.value)} />
                   </Link>
                 </li>
               );

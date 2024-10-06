@@ -37,7 +37,7 @@ const FindLesson = () => {
       <LessonCont>
         <Title>지금 주변에 있는 레슨을 찾아보세요 !</Title>
         <SearchBox>
-          <Link to="">
+          <Link to="/search">
             <StyledSearch />
           </Link>
         </SearchBox>
