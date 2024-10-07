@@ -318,10 +318,8 @@ const ClassUpload = () => {
     const [optionBaby, setOptionBaby] = useState({value: "c", label: "l"});
 
     // 주요 행정구역 옵션 상태 정의
-    const optionsMainLocation = mainLocationArr.map((v) => {
-        return {value: v, label: v};
-    });
-    const [optionMainLocation, setoptionMainLocation] = useState(optionsMainLocation[0]);
+    
+    const [optionMainLocation, setoptionMainLocation] = useState({value: "c", label: "l"});
 
     // model 팝업 띄우기 위한 상태
     const [showFinishModal, setshowFinishModal] = useState(false);
@@ -713,21 +711,19 @@ const ClassUpload = () => {
                             <InputDiv>
                                 <InputTitle>옵션</InputTitle>
                                 <InputSubTitle>객실 갯수</InputSubTitle>
-                                <Select styles={selectCustom} options={optionsRoom} onChange={onChangeSelectRoom} value={optionRoom} />
+                                {/* 
+                                    <Select styles={selectCustom} options={optionsRoom} onChange={onChangeSelectRoom} value={optionRoom} />
                                 <InputSubTitle>최대 인원(어른: 13세 이상)</InputSubTitle>
                                 <Select styles={selectCustom} options={optionsPerson} onChange={onChangeSelectPerson} value={optionPerson} />
                                 <InputSubTitle>최대 인원(어린이: 2~12세)</InputSubTitle>
                                 <Select styles={selectCustom} options={optionsChild} onChange={onChangeSelectChild} value={optionChild} />
                                 <InputSubTitle>최대 인원(유아: ~ 2세)</InputSubTitle>
                                 <Select styles={selectCustom} options={optionsBaby} onChange={onChangeSelectBaby} value={optionBaby} />
+                                    */}
+                                
                                 <InputSubTitle>수업 카테고리 선택(최대 3개)</InputSubTitle>
                                 <CategoryCheckbox value={data.category} onChange={onChangeCategory}>
-                                    {optionWithIcon.map((v, i) => (
-                                        <CategoryCheckboxOption key={i} value={v.value}>
-                                        <div className="icon" style={{ backgroundImage: `url(${v.icon})` }} />
-                                        {v.label}
-                                        </CategoryCheckboxOption>
-                                    ))}
+                                    {/* option with icons */}
                                 </CategoryCheckbox>
                             </InputDiv>
                             <OutlineDiv />
@@ -739,7 +735,10 @@ const ClassUpload = () => {
                             <InputDiv>
                                 <InputTitle>수업 위치</InputTitle>
                                 <InputSubTitle>주요 위치</InputSubTitle>
-                                <Select styles={selectCustom} options={optionsMainLocation} onChange={onChangeMainLocation} value={optionMainLocation} />
+                                {/*
+                                    <Select styles={selectCustom} options={optionsMainLocation} onChange={onChangeMainLocation} value={optionMainLocation} />
+                                
+                                    */}
                                 <InputSubTitle>상세 위치</InputSubTitle>
                                 {/* 커서 투명화 css 추가 */}
                                 <ShortInputText id="inputSubLocation" placeholder="상세 주소를 입력해주세요." onClick={onClickSubLocation} value={data.sub_location} style={{caretColor: "transparent"}} readOnly />
