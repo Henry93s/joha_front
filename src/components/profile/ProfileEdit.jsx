@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { PasswordRegex, PhoneNumberRegex } from "../account/Regex";
-import { useNavigate } from "react-router-dom";
-import { editUserData } from "../../api/profile";
-// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
+import { useNavigate, useParams } from "react-router-dom";
+import { editUserData, fetchUserData } from "../../api/profile";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -69,6 +68,7 @@ const SaveButton = styled.button`
     background-color: #26bdbe;
     color: white;
     font-size: 16px;
+    margin-top: 10px;
     cursor: pointer;
 
     &:disabled {
@@ -86,16 +86,17 @@ const ErrorMessage = styled.p`
 
 const ProfileEdit = () => {
     const navigate = useNavigate();
+    const { email } = useParams();
 
     const [formData, setFormData] = useState({
-        email: "test@test.com",
+        email: "",
         password: "",
         passwordCheck: "",
         name: "",
         phone: "",
-        address: "",
-        detailedAddress: "",
-        profileImage: null,
+        base_address: "",
+        detail_address: "",
+        photo: "",
     });
 
     const [errors, setErrors] = useState({
@@ -103,6 +104,40 @@ const ProfileEdit = () => {
         passwordCheckError: "",
         phoneError: "",
     });
+
+    useEffect(() => {
+        const getUserData = async () => {
+            const email = localStorage.getItem("email");
+
+            if (!email) {
+                console.error("로그인된 이메일 정보가 없습니다.");
+                return;
+            }
+
+            try {
+                const response = await fetchUserData(email);
+                const userData = Array.isArray(response) ? response.find((user) => user.email === email) : response;
+                console.log("user data", userData);
+                if (userData) {
+                    setFormData((prevData) => ({
+                        ...prevData,
+                        email: userData.email || "",
+                        name: userData.name || "",
+                        phone: userData.phone || "",
+                        base_address: userData.base_address || "",
+                        detail_address: userData.detail_address || "",
+                        photo: userData.photo || "",
+                    }));
+                } else {
+                    console.error("로그인한 사용자 정보를 찾을 수 없습니다.");
+                }
+            } catch (error) {
+                console.error("유저 데이터를 가져오는 데 실패했습니다.", error);
+            }
+        };
+
+        getUserData();
+    }, []);
 
     /** 유효성 검사 */
     const validateField = {
@@ -128,7 +163,7 @@ const ProfileEdit = () => {
         if (file) {
             setFormData((prevData) => ({
                 ...prevData,
-                profileImage: file, // 파일 자체를 저장
+                photo: file,
             }));
         }
     };
@@ -164,7 +199,7 @@ const ProfileEdit = () => {
                 oncomplete: (data) => {
                     setFormData((prevData) => ({
                         ...prevData,
-                        address: data.address,
+                        base_address: data.address || "",
                     }));
                 },
             }).open();
@@ -172,8 +207,8 @@ const ProfileEdit = () => {
         document.body.appendChild(script);
     };
 
-    // 폼 제출 시 호출되는 함수
-    const onSubmitHandler = async (e) => {
+    // 완료 버튼 클릭 시
+    const onClickHandleSave = async (e) => {
         e.preventDefault();
 
         // 모든 필드 유효성 검사
@@ -195,24 +230,29 @@ const ProfileEdit = () => {
             try {
                 // FormData 객체를 사용하여 데이터 전송
                 const formDataSend = new FormData();
+                formDataSend.append("email", formData.email);
                 formDataSend.append("name", formData.name);
                 formDataSend.append("password", formData.password);
                 formDataSend.append("phone", formData.phone);
-                formDataSend.append("base_address", formData.address);
-                formDataSend.append("detail_address", formData.detailedAddress);
+                formDataSend.append("base_address", formData.base_address);
+                formDataSend.append("detail_address", formData.detail_address);
 
-                // 프로필 이미지가 있을 경우에만 추가
-                if (formData.profileImage) {
-                    formDataSend.append("photo", formData.profileImage);
+                // 프로필 이미지가 새로 선택되었을 경우에만 추가
+                if (formData.photo && typeof formData.photo !== "string") {
+                    formDataSend.append("photo", formData.photo);
                 }
 
-                // FormData 전송
+                // FormData 전송 및 서버 응답 확인
                 const response = await editUserData(formDataSend);
+                console.log("서버 응답", response);
 
                 // 수정 성공 시
-                if (response.status === 200) {
+                if (response && response.code === 200) {
                     alert("정보가 성공적으로 수정되었습니다.");
                     navigate("/profile");
+                } else {
+                    console.error("예상치 못한 응답 코드:", response.status);
+                    alert("정보 수정에 실패했습니다.");
                 }
             } catch (error) {
                 // 실패 시 백엔드에서 온 에러 메시지 사용
@@ -222,16 +262,18 @@ const ProfileEdit = () => {
     };
 
     return (
-        <form onSubmit={onSubmitHandler}>
+        <>
             {/* 프로필 사진 업로드 */}
             <ProfileInputWrapper>
-                <ProfileLabel htmlFor="profile" $hasImage={formData.profileImage}>
-                    {formData.profileImage && (
-                        <ProfileImage
-                            src={URL.createObjectURL(formData.profileImage)} // 이미지 미리보기
-                            alt="프로필 미리보기"
-                        />
-                    )}
+                <ProfileLabel htmlFor="profile" $hasImage={formData.photo}>
+                    {formData.photo &&
+                        (typeof formData.photo === "string" ? (
+                            // formData.photo가 문자열인 경우, 즉 URL로 바로 사용할 수 있는 경우
+                            <ProfileImage src={formData.photo} alt="프로필 미리보기" />
+                        ) : (
+                            // formData.photo가 파일인 경우, URL.createObjectURL로 미리보기 생성
+                            <ProfileImage src={URL.createObjectURL(formData.photo)} alt="프로필 미리보기" />
+                        ))}
                 </ProfileLabel>
                 <ProfileInput
                     type="file"
@@ -272,7 +314,7 @@ const ProfileEdit = () => {
                 placeholder="이름"
                 value={formData.name}
                 onChange={onChangeHandler}
-                required
+                readOnly
             />
 
             {/* 휴대폰번호 필드 */}
@@ -290,9 +332,9 @@ const ProfileEdit = () => {
             {/* 기본 주소 필드 */}
             <Input
                 type="text"
-                name="address"
+                name="base_address"
                 placeholder="기본 주소"
-                value={formData.address}
+                value={formData.base_address || ""}
                 onClick={onClickAddressSearchHandler}
                 readOnly
                 required
@@ -301,16 +343,16 @@ const ProfileEdit = () => {
             {/* 상세 주소 필드 */}
             <Input
                 type="text"
-                name="detailedAddress"
+                name="detail_address"
                 placeholder="상세 주소"
-                value={formData.detailedAddress}
+                value={formData.detail_address}
                 onChange={onChangeHandler}
                 required
             />
 
             {/* 저장하기 버튼 */}
-            <SaveButton type="submit">완료</SaveButton>
-        </form>
+            <SaveButton onClick={onClickHandleSave}>완료</SaveButton>
+        </>
     );
 };
 
