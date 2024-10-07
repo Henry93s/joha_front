@@ -519,7 +519,7 @@ const View = () => {
 
         <CommentDiv>
           <h2>댓글</h2>
-          <Comment name={""} content={""} />
+          {/* <Comment name={""} content={""} /> */}
         </CommentDiv>
         <InputTextDiv>
           <textarea></textarea>

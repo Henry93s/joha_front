@@ -307,25 +307,15 @@ const ClassUpload = () => {
 
     // 방 갯수 state
     // 방 갯수 옵션 상태 정의
-    const optionsRoom = optionsRoomArr.map((v)  => {
-        return {value: v, label: v};
-    });
-    const [optionRoom, setOptionRoom] = useState(optionsRoom[0]);
+    
+    const [optionRoom, setOptionRoom] = useState({value: "c", label: "l"});
 
     // 어른/어린이/아기 state
     // 인원 수 옵션 상태 정의
-    const optionsPerson = personArr.map((v) => {
-        return {value: v, label: v};
-    });
-    const optionsChild = childArr.map((v) => {
-        return {value: v, label: v};
-    });
-    const optionsBaby = childArr.map((v) => {
-        return {value: v, label: v};
-    });
-    const [optionPerson, setOptionPerson] = useState(optionsPerson[0]);
-    const [optionChild, setOptionChild] = useState(optionsChild[0]);
-    const [optionBaby, setOptionBaby] = useState(optionsBaby[0]);
+    
+    const [optionPerson, setOptionPerson] = useState({value: "c", label: "l"});
+    const [optionChild, setOptionChild] = useState({value: "c", label: "l"});
+    const [optionBaby, setOptionBaby] = useState({value: "c", label: "l"});
 
     // 주요 행정구역 옵션 상태 정의
     const optionsMainLocation = mainLocationArr.map((v) => {
