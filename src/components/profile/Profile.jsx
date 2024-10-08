@@ -23,7 +23,7 @@ const ProfileHeader = styled.header`
     display: flex;
     align-items: center;
     padding-bottom: 30px;
-    box-shadow: 0px 7px 3px -2px rgba(0, 0, 0, 0.1);
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 6px;
 `;
 
 const ProfileImageWrapper = styled.div`
