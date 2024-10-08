@@ -26,38 +26,43 @@ import MyClassesPage from "./pages/MyClassesPage";
 import { AnimatePresence } from "framer-motion";
 import ProfilePage from "./pages/ProfilePage";
 import ProfileEditPage from "./pages/ProfileEditPage";
+import ClassViewPage from "./pages/ClassViewPage";
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <AnimatePresence>
-            <Routes>
-                <Route path="/" element={<MainPage />} />
-                <Route path="/inquiry" element={<InquiryPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/join" element={<JoinPage />} />
-                <Route path="/joinEnd" element={<JoinEndPage />} />
-                <Route path="/findId" element={<FindIdPage />} />
-                <Route path="/findPassword" element={<FindPasswordPage />} />
-                <Route path="/ChangePassword" element={<ChangePasswordPage />} />
-                <Route path="/schedule" element={<SchedulePage />} />
-                <Route path="/admin" element={<AdminIntroPage />} />
-                <Route path="/admin/userList" element={<AdminUserListPage />} />
-                <Route path="/admin/userList/:email" element={<AdminUserDetailPage />} />
-                <Route path="/search" element={<SearchPage />} />
-                <Route path="/lesson_search" element={<LessonSearchPage />} />
-                <Route path="/story" element={<StoryPage />} />
-                <Route path="/story/edit" element={<StoryEditPage />} />
-                <Route path="/story/view" element={<StoryViewPage />} />
-                <Route path="/story/post" element={<StoryPostPage />} />
-                <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
-                <Route path="/wish" element={<WishListPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/profile/edit/:email" element={<ProfileEditPage />} />
-                <Route path="/myclass" element={<MyClassesPage />} />
-                <Route path="/upload" element={<ClassUpload />} />
-            </Routes>
+          <Routes>
+            <Route path="/" element={<MainPage />} />
+            <Route path="/inquiry" element={<InquiryPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/join" element={<JoinPage />} />
+            <Route path="/joinEnd" element={<JoinEndPage />} />
+            <Route path="/findId" element={<FindIdPage />} />
+            <Route path="/findPassword" element={<FindPasswordPage />} />
+            <Route path="/ChangePassword" element={<ChangePasswordPage />} />
+            <Route path="/schedule" element={<SchedulePage />} />
+            <Route path="/admin" element={<AdminIntroPage />} />
+            <Route path="/admin/userList" element={<AdminUserListPage />} />
+            <Route
+              path="/admin/userList/:email"
+              element={<AdminUserDetailPage />}
+            />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/lesson_search" element={<LessonSearchPage />} />
+            <Route path="/story" element={<StoryPage />} />
+            <Route path="/story/edit" element={<StoryEditPage />} />
+            <Route path="/story/view" element={<StoryViewPage />} />
+            <Route path="/story/post" element={<StoryPostPage />} />
+            <Route path="/story/view/:nanoid" element={<StoryViewPage />} />
+            <Route path="/wish" element={<WishListPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit/:email" element={<ProfileEditPage />} />
+            <Route path="/myclass" element={<MyClassesPage />} />
+            <Route path="/upload" element={<ClassUpload />} />
+            <Route path="/class/view/:id" element={<ClassViewPage />} />
+          </Routes>
         </AnimatePresence>
       </BrowserRouter>
     </div>

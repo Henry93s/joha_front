@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import LessonItem from "./LessonItem";
 import { ReactComponent as Filter } from "../../assets/icons/filter.svg"; // SVG 파일을 컴포넌트로 import
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchClass } from "../../api/class";
 
 const Container = styled.div`
   padding: 30px 15px 0;
@@ -43,46 +44,12 @@ const LessonCont = styled.div`
 `;
 
 const TopLesson = () => {
-  const dataArr = [
-    {
-      image: "",
-      title: "헬스",
-      star: "4.5",
-      name: "마동석",
-      price: "10,000",
-      comment: 19,
-      view: 90,
-    },
-    {
-      image: "",
-      title: "필라테스",
-      star: "4.6",
-      name: "홍길동",
-      price: "13,000",
-      comment: 33,
-      view: 120,
-    },
-    {
-      image: "",
-      title: "피아노",
-      star: "4.8",
-      name: "홍길동",
-      price: "15,000",
-      comment: 12,
-      view: 110,
-    },
-    {
-      image: "",
-      title: "모자 뜨개질",
-      star: "4.2",
-      name: "김철수",
-      price: "20,000",
-      comment: 21,
-      view: 100,
-    },
-  ];
-
-  const [filterDataArr, setFilterDataArr] = useState(dataArr);
+  const [filterDataArr, setFilterDataArr] = useState([]);
+  useEffect(() => {
+    const dataArr = fetchClass();
+    console.log(dataArr);
+    setFilterDataArr(dataArr);
+  }, []);
 
   const changeHandler = (e) => {
     const value = e.target.value;
