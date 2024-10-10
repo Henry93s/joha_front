@@ -4,7 +4,7 @@ import { EmailRegex, PasswordRegex, PhoneNumberRegex } from "./Regex";
 import { useNavigate } from "react-router-dom";
 import { requestEmailCode, verifyEmailCode } from "../../api/emailAuth";
 import { createUser } from "../../api/user";
-// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
+import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const FlexDiv = styled.div`
     display: flex;
@@ -214,18 +214,18 @@ const Join = () => {
         document.body.appendChild(script);
     };
 
-    // // AES 암호화 함수
-    // const encryptPassword = (password, key) => {
-    //     return CryptoJS.AES.encrypt(password, key).toString();
-    // };
+    // AES 암호화 함수
+    const encryptPassword = (password, key) => {
+        return CryptoJS.AES.encrypt(password, key).toString();
+    };
 
     // 폼 제출 시 호출되는 함수
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
-        // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
-        // const aesPassword = encryptPassword(formData.password, key); // 암호화된 비밀번호
+        const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
+        const aesPassword = encryptPassword(formData.password, key); // 암호화된 비밀번호
 
         // 모든 필드 유효성 검사
         const isValid = Object.keys(validateField).reduce((acc, field) => {
@@ -248,7 +248,7 @@ const Join = () => {
                 const formDataSend = new FormData();
                 formDataSend.append("email", formData.email);
                 formDataSend.append("name", formData.name);
-                formDataSend.append("password", formData.password);
+                formDataSend.append("password", aesPassword);
                 formDataSend.append("phone", formData.phone);
                 formDataSend.append("base_address", formData.address);
                 formDataSend.append("detail_address", formData.detailedAddress);
@@ -277,10 +277,7 @@ const Join = () => {
         <form onSubmit={onSubmitHandler}>
             {/* 프로필 사진 업로드 */}
             <ProfileInputWrapper>
-                <ProfileLabel
-                    htmlFor="profile"
-                    $hasImage={formData.profileImage}
-                >
+                <ProfileLabel htmlFor="profile" $hasImage={formData.profileImage}>
                     {formData.profileImage && (
                         <ProfileImage
                             src={URL.createObjectURL(formData.profileImage)} // 이미지 미리보기
@@ -307,11 +304,7 @@ const Join = () => {
                     onChange={onChangeHandler}
                     required
                 />
-                <Button
-                    type="button"
-                    onClick={onClickEmailCodeRequest}
-                    disabled={isEmailCode}
-                >
+                <Button type="button" onClick={onClickEmailCodeRequest} disabled={isEmailCode}>
                     인증요청
                 </Button>
             </FlexDiv>
@@ -327,11 +320,7 @@ const Join = () => {
                     onChange={onChangeHandler}
                     required
                 />
-                <Button
-                    type="button"
-                    onClick={onClickCodeCheck}
-                    disabled={isCodeCheck}
-                >
+                <Button type="button" onClick={onClickCodeCheck} disabled={isCodeCheck}>
                     인증확인
                 </Button>
             </FlexDiv>
