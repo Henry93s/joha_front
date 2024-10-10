@@ -25,7 +25,7 @@ export const fetchUserByEmail = async (email) => {
 /** 회원 삭제 (관리자 회원 상세 페이지) */
 export const deleteUserByEmail = async (email) => {
     try {
-        const response = await axios.delete("http://localhost:3002/users", {
+        const response = await axios.delete("http://localhost:3002/users/delete", {
             data: { email },
         });
         return response.data;
