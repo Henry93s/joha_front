@@ -224,7 +224,7 @@ const Join = () => {
         e.preventDefault();
 
         // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
-        const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
+        const key = `${process.env.REACT_APP_AES_KEY}`; // 환경변수에서 암호화 키 가져오기
         const aesPassword = encryptPassword(formData.password, key); // 암호화된 비밀번호
 
         // 모든 필드 유효성 검사
