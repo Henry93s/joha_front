@@ -6,24 +6,12 @@ export const Container = styled.div`
   border-radius: 10px;
   width: 90%;
   margin: 25px auto;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-
-  @media (min-width: 500px) {
-    flex-direction: row;
-    padding: 0;
-  }
 `;
 export const Content = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  @media (min-width: 500px) {
-    width: 50%;
-    justify-content: center;
-  }
+  width: 100%;
 `;
 export const NoReserveImg = styled.img`
   width: 50px;
@@ -35,7 +23,6 @@ export const Title = styled.span`
   font-size: 16px;
   line-height: 20px;
   word-break: keep-all;
-
 `;
 export const Description = styled.span`
   margin-bottom: 12px;
