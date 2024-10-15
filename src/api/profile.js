@@ -29,9 +29,13 @@ export const deleteUser = async (id) => {
 /** 사용자 정보 수정 (개인정보 수정 페이지) */
 export const editUserData = async (data) => {
     try {
-        await axios.put(`http://localhost:3002/users`, data, {
-            // 쿠키를 포함시키기 위해 필요
+        const response = await axios.put(`http://localhost:3002/users`, data, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
+
+        return response.data;
     } catch (error) {
         console.error("사용자 정보를 수정하는데 실패했습니다.", error);
         throw error;

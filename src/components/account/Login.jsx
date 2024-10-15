@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../api/user";
-// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
+import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const LoginInput = styled.input`
     & + input {
@@ -53,22 +53,21 @@ const Login = () => {
     const navigate = useNavigate();
 
     // // AES 암호화 함수
-    // const encryptPassword = (password, key) => {
-    //     return CryptoJS.AES.encrypt(password, key).toString();
-    // };
+    const encryptPassword = (password, key) => {
+        return CryptoJS.AES.encrypt(password, key).toString();
+    };
 
     // 로그인 요청 핸들러
     const onSubmitHandler = async (e) => {
         e.preventDefault();
 
         try {
-            // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
-            // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
-            // const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
+            // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
+            const key = `${process.env.REACT_APP_AES_KEY}`; // 환경변수에서 암호화 키 가져오기
+            const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
-            const response = await loginUser(email, password);
+            const response = await loginUser(email, aesPassword);
             if (response.status === 200) {
-                localStorage.setItem("email", email);
                 localStorage.setItem("is_logined", "true");
                 navigate("/");
             }

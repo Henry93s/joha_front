@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { changePassword } from "../../api/user";
-// import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
+import CryptoJS from "crypto-js"; // AES 암호화를 위해 CryptoJS 사용
 
 const ChangeInput = styled.input`
     border: 1px solid #ddd;
@@ -74,9 +74,9 @@ const ChangePassword = () => {
     };
 
     // // 비밀번호 AES 암호화 함수
-    // const encryptPassword = (password, key) => {
-    //     return CryptoJS.AES.encrypt(password, key).toString();
-    // };
+    const encryptPassword = (password, key) => {
+        return CryptoJS.AES.encrypt(password, key).toString();
+    };
 
     // 비밀번호 변경하기 핸들러
     const onSubmitHandler = async (e) => {
@@ -96,10 +96,10 @@ const ChangePassword = () => {
 
         try {
             // // 비밀번호를 AES 방식(aes-128)으로 암호화 적용
-            // const key = `${process.env.REACT_APP_AES_KEY};`; // 환경변수에서 암호화 키 가져오기
-            // const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
+            const key = `${process.env.REACT_APP_AES_KEY}`; // 환경변수에서 암호화 키 가져오기
+            const aesPassword = encryptPassword(password, key); // 암호화된 비밀번호
 
-            const response = await changePassword(location.state.email, password);
+            const response = await changePassword(location.state.email, aesPassword);
             if (response.status === 200) {
                 alert("비밀번호가 성공적으로 변경되었습니다.");
                 navigate("/login");
@@ -136,11 +136,7 @@ const ChangePassword = () => {
     return (
         <form onSubmit={onSubmitHandler}>
             {/* 이메일 필드 (읽기 전용) */}
-            <ChangeInput
-                type="email"
-                value={location.state.email ? location.state.email : ""}
-                readOnly
-            />
+            <ChangeInput type="email" value={location.state.email ? location.state.email : ""} readOnly />
 
             {/* 비밀번호 필드 */}
             <ChangeInput
