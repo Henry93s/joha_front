@@ -50,7 +50,8 @@ const TopLesson = () => {
     const dataArr = async () => {
       try {
         const dataArr = await fetchClass();
-        setFilterDataArr(dataArr);
+        console.log(dataArr)
+        setFilterDataArr(dataArr.data);
       } catch (error) {
         console.error("Error fetching class data:", error);
       }
