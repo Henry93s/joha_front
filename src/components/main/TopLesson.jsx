@@ -46,9 +46,16 @@ const LessonCont = styled.div`
 const TopLesson = () => {
   const [filterDataArr, setFilterDataArr] = useState([]);
   useEffect(() => {
-    const dataArr = fetchClass();
-    console.log(dataArr);
-    setFilterDataArr(dataArr);
+    // useEffect 내 비동기 함수 사용하기 위한 비동기 함수 정의 및 사용
+    const dataArr = async () => {
+      try {
+        const dataArr = await fetchClass();
+        setFilterDataArr(dataArr);
+      } catch (error) {
+        console.error("Error fetching class data:", error);
+      }
+    };
+    dataArr();
   }, []);
 
   const changeHandler = (e) => {
@@ -78,7 +85,8 @@ const TopLesson = () => {
         </FilterBox>
       </TitleBox>
       <LessonCont>
-        {filterDataArr.map((data, idx) => {
+        {(filterDataArr && filterDataArr.length !== 0) &&
+         filterDataArr.map((data, idx) => {
           console.log(filterDataArr);
           return (
             <LessonItem

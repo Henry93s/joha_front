@@ -3,9 +3,15 @@ import axios from "axios";
 // 클래스 전체 가져오기
 export const fetchClass = async () => {
   try {
-    const res = await axios.get(`http://localhost:3002/class`);
-    const data = res.data.data;
-    return data;
+    const res = await axios.get(`http://localhost:3002/class/read/all`);
+    if(res.code === 200){
+      return res.data.data;
+    } else {
+      // res.code가 200이 아닐 때
+      const error = new Error(`custom error code: ${res.data.code}`);
+      console.log(error);
+      return;  // undefined
+    }
   } catch (error) {
     console.error(error);
     return;
