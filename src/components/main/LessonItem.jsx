@@ -8,12 +8,13 @@ const ItemBox = styled(Link)`
   width: calc(50% - 6px);
   overflow: hidden;
   margin-bottom: 20px;
+  color: inherit;
 `;
 const ImgBox = styled.div`
   height: 29vw;
   max-height: 240px;
   overflow: hidden;
-  & image {
+  & img {
     width: 100%;
   }
   background: #ddd;
@@ -29,10 +30,16 @@ const Info = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 4px 10px;
+  font-size: 12px;
   & + & {
     border-top: 1px solid #dfdfdf;
   }
-  font-size: 12px;
+  & p {
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 const FlexBox = styled.div`
   display: flex;
@@ -57,9 +64,17 @@ const Price = styled.strong`
   font-size: 12px;
 `;
 
-const LessonItem = ({ image, title, star, name, price, comment }) => {
+const LessonItem = ({
+  image,
+  title,
+  star,
+  price,
+  comments,
+  nanoid,
+  author,
+}) => {
   return (
-    <ItemBox>
+    <ItemBox to={`/class/view/${nanoid}`}>
       <ImgBox>
         <img src={image} />
       </ImgBox>
@@ -69,7 +84,7 @@ const LessonItem = ({ image, title, star, name, price, comment }) => {
           <FlexBox>
             <SvgText>
               <Comment />
-              {comment}
+              {comments}
             </SvgText>
             <SvgText>
               <Star />
@@ -78,8 +93,8 @@ const LessonItem = ({ image, title, star, name, price, comment }) => {
           </FlexBox>
         </Info>
         <Info>
-          <p>{name}</p>
-          <Price>₩{price}</Price>
+          <p>{author}</p>
+          <Price>₩{price.toLocaleString()}</Price>
         </Info>
       </InfoBox>
     </ItemBox>

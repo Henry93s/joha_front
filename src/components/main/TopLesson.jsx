@@ -46,9 +46,13 @@ const LessonCont = styled.div`
 const TopLesson = () => {
   const [filterDataArr, setFilterDataArr] = useState([]);
   useEffect(() => {
-    const dataArr = fetchClass();
-    console.log(dataArr);
-    setFilterDataArr(dataArr);
+    const fetchData = async () => {
+      const dataArr = await fetchClass();
+      console.log(dataArr);
+      setFilterDataArr(dataArr);
+    };
+
+    fetchData();
   }, []);
 
   const changeHandler = (e) => {
@@ -56,7 +60,7 @@ const TopLesson = () => {
 
     // 데이터 배열을 정렬하는 로직
     const sortedData = [...filterDataArr].sort((a, b) => {
-      if (value === "star" || value === "view" || value === "comment") {
+      if (value === "star" || value === "view" || value === "comments") {
         return b[value] - a[value]; // 내림차순 정렬
       }
       return 0;
@@ -73,7 +77,7 @@ const TopLesson = () => {
           <FilterSelect onChange={(e) => changeHandler(e)}>
             <option value="star">별점순</option>
             <option value="view">조회순</option>
-            <option value="comment">댓글순</option>
+            <option value="comments">댓글순</option>
           </FilterSelect>
         </FilterBox>
       </TitleBox>
@@ -83,12 +87,13 @@ const TopLesson = () => {
           return (
             <LessonItem
               key={`class${idx}`}
-              image={data.image}
+              image={data.main_image}
               title={data.title}
               star={data.star}
-              name={data.name}
               price={data.price}
-              comment={data.comment}
+              comments={data.comments}
+              nanoid={data.nanoid}
+              author={data.author}
             />
           );
         })}
