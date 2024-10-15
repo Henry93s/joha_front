@@ -4,8 +4,9 @@ import axios from "axios";
 export const fetchClass = async () => {
   try {
     const res = await axios.get(`http://localhost:3002/class/read/all`);
-    if(res.code === 200){
-      return res.data.data;
+    if(res.data.code === 200){
+
+      return res.data;
     } else {
       // res.code가 200이 아닐 때
       const error = new Error(`custom error code: ${res.data.code}`);
