@@ -1,8 +1,21 @@
 import axios from "axios";
 
+// 클래스 전체 가져오기
+export const fetchClass = async () => {
+  try {
+    const res = await axios.get(`http://localhost:3002/class`);
+    const data = res.data.data;
+    return data;
+  } catch (error) {
+    console.error(error);
+    return;
+  }
+};
+
+// 클래스 상세정보 가져오기
 export const getOneClass = async (nanoid) => {
   try {
-    const res = await axios.get(`/class/${nanoid}`);
+    const res = await axios.get(`http://localhost:3002/class/${nanoid}`);
     const data = res.data.data;
     return data;
   } catch (error) {
@@ -14,7 +27,7 @@ export const getOneClass = async (nanoid) => {
 /* 찜한 클래스 가져오기 */
 export const getWishClass = async () => {
   try {
-    const res = await axios.get("/wish");
+    const res = await axios.get("http://localhost:3002/wish");
     return res;
   } catch (e) {
     alert(e.response?.data?.message);
@@ -26,7 +39,7 @@ export const getWishClass = async () => {
 /* 클래스 찜하기 */
 export const addWishList = async () => {
   try {
-    const res = await axios.get("/wish");
+    const res = await axios.get("http://localhost:3002/wish");
     return res;
   } catch (e) {
     alert(e.response?.data?.message);
@@ -36,9 +49,9 @@ export const addWishList = async () => {
 };
 
 /* 검색한 클래스 리스트 가져오기 */
-export const fetchClass = async () => {
+export const getSearchClass = async () => {
   try {
-    const res = await axios("/class/search"); // 백엔드의 가게 정보 요청 API
+    const res = await axios("http://localhost:3002/class/search"); // 백엔드의 가게 정보 요청 API
     return res;
   } catch (error) {
     console.error("Failed to fetch places:", error);

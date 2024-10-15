@@ -1,5 +1,5 @@
-import styled, { css } from "styled-components";
-import {Checkbox} from 'antd';
+import styled from "styled-components";
+import { Checkbox } from "antd";
 
 export const Container = styled.div`
   padding: 0;
@@ -28,15 +28,11 @@ export const Button = styled.div`
   font-weight: 500;
   color: white;
   border: none;
-  background-color: #E61E51;
+  background-color: var(--main-color);
   border-radius: 10px;
   cursor: pointer;
   margin-bottom: 30px;
   transition: background-color 1s;
-
-  &:hover{
-    background-color:#F0586F;
-  }
 `;
 
 export const ListItem = styled.div`
@@ -61,39 +57,42 @@ export const Image = styled.div`
 export const CheckboxGroup = styled(Checkbox.Group)`
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between; 
-  & > a {display: block; width: calc(50% - 10px)}
+  justify-content: space-between;
+  & > a {
+    display: block;
+    width: calc(50% - 10px);
+  }
   gap: 10px;
   width: 100%;
-`
+`;
 // antd 체크박스 css style 정의
 export const CheckboxOption = styled(Checkbox)`
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    // 체크'박스' css 
-    // 체크박스 크기
-    .ant-checkbox-input {
-        width: 27px;  
-        height: 27px; 
-    }
-    .ant-checkbox-inner {
-        width: 27px;  
-        height: 27px; 
-        border-radius: 4px; 
-    }
-    .ant-checkbox-inner:after {
-        width: 7px; 
-        height: 15px;
-    }
-    // 체크'박스' css 
-    // input 체크 후 hover 시에도 배경, 테두리 유지
-    // css 레벨에서 우선순위를 최상위로 높임 : !important
-    .ant-checkbox-input:checked + .ant-checkbox-inner {
-        background-color: #E61E51 !important;
-        border: 1px solid #F0586F !important;
-    }
-`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  // 체크'박스' css
+  // 체크박스 크기
+  .ant-checkbox-input {
+    width: 27px;
+    height: 27px;
+  }
+  .ant-checkbox-inner {
+    width: 27px;
+    height: 27px;
+    border-radius: 4px;
+  }
+  .ant-checkbox-inner:after {
+    width: 7px;
+    height: 15px;
+  }
+  // 체크'박스' css
+  // input 체크 후 hover 시에도 배경, 테두리 유지
+  // css 레벨에서 우선순위를 최상위로 높임 : !important
+  .ant-checkbox-input:checked + .ant-checkbox-inner {
+    background-color: #e61e51 !important;
+    border: 1px solid #f0586f !important;
+  }
+`;
 export const DetailContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -118,17 +117,21 @@ export const Price = styled.span`
 `;
 
 export const Loading_div = styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 40%;
-`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 40%;
+`;
 export const Loading_img = styled.img`
-    /* 회전 애니메이션 */
-    @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  /* 회전 애니메이션 */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
     }
-`
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
