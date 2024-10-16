@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as Pen } from "../../assets/icons/pen.svg";
+import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { logoutUser } from "../../api/logoutUser";
 
 const HeaderContainer = styled.div`
@@ -36,6 +37,12 @@ const ProfileDiv = styled.div`
     height: 40px;
     border-radius: 10px;
     background: #ddd;
+    cursor: pointer;
+`;
+
+const ProfileIcon = styled(DefaultProfileIcon)`
+    width: 100%;
+    height: 100%;
 `;
 
 const LoginLink = styled(Link)`
@@ -83,9 +90,16 @@ const Header = () => {
         }
     };
 
+    const onclickProfileIcon = () => {
+        isLogined ? navigate("/profile") : navigate("/login");
+    };
+
     return (
         <HeaderContainer>
-            <ProfileDiv />
+            <ProfileDiv onClick={onclickProfileIcon}>
+                <ProfileIcon />
+            </ProfileDiv>
+
             <Logo to="/">JOHA</Logo>
 
             {path === "/story" ? (
