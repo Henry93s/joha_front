@@ -2,8 +2,8 @@ import axios from "axios";
 
 export const loginUserCheck = async () => {
     try {
-        const res = await axios.get("/users/getuser", {
-            // 쿠키를 포함시키기 위해 필요
+        const res = await axios.get("http://localhost:3002/users/getuser", {
+            withCredentials: true, // 쿠키 자동 포함
         });
         return res.data;
     } catch (e) {

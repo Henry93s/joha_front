@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 // import loginState from "../../atoms/loginState";
 // import { useRecoilValue } from "recoil";
 import { logoutUser } from "../../api/logoutUser";
-import { deleteUser, fetchUserData } from "../../api/profile";
+import { deleteUser } from "../../api/profile";
+import { loginUserCheck } from "../../api/loginUserCheck";
 
 const ProfileContainer = styled.div`
     display: flex;
@@ -106,44 +107,28 @@ const ProfileLogout = styled.button`
 
 const Profile = () => {
     // const user = useRecoilValue(loginState);
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        // is_logined가 false인 경우 로그인 페이지로 이동하는 코드 나중에 주석 해제
-        // 프로필 페이지 말고 Header에서 프로필페이지 이동 클릭 시에 코드 추가해도 가능할 것 같음.
-
-        // if (!user.is_logined) {
-        //     navigate("/login");
-        // }
-
-        // if (user.is_logined) {
         const getUserData = async () => {
-            const email = localStorage.getItem("email");
-
-            if (!email) {
-                console.error("로그인된 이메일 정보가 없습니다.");
-                return;
-            }
-
             try {
-                const response = await fetchUserData(email);
-                const userData = Array.isArray(response) ? response.find((user) => user.email === email) : response;
-
-                if (userData) {
-                    setUser(userData);
-                    console.log("로그인 user data", userData);
+                const response = await loginUserCheck();
+                console.log("응답", response);
+                if (response.code === 200) {
+                    setUser(response.data);
+                    console.log("로그인 user data", response.data);
                 } else {
                     console.error("로그인한 사용자 정보를 찾을 수 없습니다.");
                 }
             } catch (error) {
                 console.error("유저 데이터를 가져오는 데 실패했습니다.", error);
+                navigate("/login");
             }
         };
 
         getUserData();
-        // }
-    }, []);
+    }, [navigate]);
 
     /** 개인정보 수정 클릭 시 */
     const onClickProfileEditHandler = () => {
@@ -160,7 +145,6 @@ const Profile = () => {
         if (window.confirm("정말 탈퇴하시겠습니까?")) {
             try {
                 await deleteUser(user.email);
-
                 // 탈퇴 성공 후 홈 페이지로 이동
                 navigate("/");
             } catch (error) {
@@ -173,7 +157,7 @@ const Profile = () => {
     const onclickLogoutHandler = async () => {
         try {
             const response = await logoutUser();
-            if (response && response.status === 200) {
+            if (response.status === 200) {
                 localStorage.setItem("is_logined", "false");
                 navigate("/");
             }
