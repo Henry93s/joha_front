@@ -88,7 +88,7 @@ const Header = () => {
                 }
             } catch (error) {
                 console.error("로그인 사용자 확인 실패", error);
-                setIsLogined(true);
+                setIsLogined(false);
                 localStorage.setItem("is_logined", "false");
             }
         };
