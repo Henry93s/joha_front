@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { PasswordRegex, PhoneNumberRegex } from "../account/Regex";
 import { useNavigate, useParams } from "react-router-dom";
-import { editUserData, fetchUserData } from "../../api/profile";
+import { editUserData } from "../../api/profile";
+import { loginUserCheck } from "../../api/loginUserCheck";
 
 const FlexDiv = styled.div`
     display: flex;
@@ -107,27 +108,19 @@ const ProfileEdit = () => {
 
     useEffect(() => {
         const getUserData = async () => {
-            const email = localStorage.getItem("email");
-
-            if (!email) {
-                console.error("로그인된 이메일 정보가 없습니다.");
-                return;
-            }
-
             try {
-                const response = await fetchUserData(email);
-                const userData = Array.isArray(response) ? response.find((user) => user.email === email) : response;
-                console.log("user data", userData);
-                if (userData) {
-                    setFormData((prevData) => ({
-                        ...prevData,
+                const response = await loginUserCheck();
+                console.log("user data", response);
+                if (response.code === 200) {
+                    const userData = response.data;
+                    setFormData({
                         email: userData.email || "",
                         name: userData.name || "",
                         phone: userData.phone || "",
                         base_address: userData.base_address || "",
                         detail_address: userData.detail_address || "",
                         photo: userData.photo || "",
-                    }));
+                    });
                 } else {
                     console.error("로그인한 사용자 정보를 찾을 수 없습니다.");
                 }
@@ -285,14 +278,14 @@ const ProfileEdit = () => {
             </ProfileInputWrapper>
 
             {/* 이메일 필드 (읽기 전용) */}
-            <Input type="email" name="email" value={formData.email} readOnly />
+            <Input type="email" name="email" value={formData.email || ""} readOnly />
 
             {/* 새 비밀번호 필드 */}
             <Input
                 type="password"
                 name="password"
                 placeholder="새 비밀번호 입력"
-                value={formData.password}
+                value={formData.password || ""}
                 onChange={onChangeHandler}
             />
             <ErrorMessage>{errors.passwordError}</ErrorMessage>
@@ -302,7 +295,7 @@ const ProfileEdit = () => {
                 type="password"
                 name="passwordCheck"
                 placeholder="새 비밀번호 확인"
-                value={formData.passwordCheck}
+                value={formData.passwordCheck || ""}
                 onChange={onChangeHandler}
             />
             <ErrorMessage>{errors.passwordCheckError}</ErrorMessage>
@@ -312,7 +305,7 @@ const ProfileEdit = () => {
                 type="text"
                 name="name"
                 placeholder="이름"
-                value={formData.name}
+                value={formData.name || ""}
                 onChange={onChangeHandler}
                 readOnly
             />
@@ -322,7 +315,7 @@ const ProfileEdit = () => {
                 type="text"
                 name="phone"
                 placeholder="휴대폰번호"
-                value={formData.phone}
+                value={formData.phone || ""}
                 onChange={onChangeHandler}
                 maxLength={13}
                 required
@@ -345,7 +338,7 @@ const ProfileEdit = () => {
                 type="text"
                 name="detail_address"
                 placeholder="상세 주소"
-                value={formData.detail_address}
+                value={formData.detail_address || ""}
                 onChange={onChangeHandler}
                 required
             />
