@@ -6,7 +6,7 @@ export const logoutUser = async () => {
             "http://localhost:3002/users/logout",
             {},
             {
-                // 쿠키를 포함시키기 위해 필요
+                withCredentials: true // 쿠키 포함
             },
         );
         return res;

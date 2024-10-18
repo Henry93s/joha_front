@@ -41,9 +41,8 @@ export const loginUser = async (email, password) => {
         const response = await axios.post(
             "http://localhost:3002/login",
             { email, password },
-            { withCredentials: true }, // 쿠키 자동 포함
+             { withCredentials: true }, // 쿠키 자동 포함
         );
-
         return response;
     } catch (error) {
         console.error("로그인 요청에 실패했습니다.", error);

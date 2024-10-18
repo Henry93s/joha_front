@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { ReactComponent as Pen } from "../../assets/icons/pen.svg";
 import { ReactComponent as DefaultProfileIcon } from "../../assets/icons/profileIcon.svg";
 import { logoutUser } from "../../api/logoutUser";
+import { loginUserCheck } from "../../api/loginUserCheck";
 
 const HeaderContainer = styled.div`
     position: sticky;
@@ -74,7 +75,25 @@ const Header = () => {
 
     // 로그인 여부 확인
     useEffect(() => {
-        setIsLogined(localStorage.getItem("is_logined") === "true");
+        const checkLogin = async () => {
+            try {
+                const response = await loginUserCheck();
+                if (response && (response.code === 200 || response.code === 202)) {
+                    setIsLogined(true);
+                    localStorage.setItem("is_logined", "true");
+                }
+                else {
+                    setIsLogined(false);
+                    localStorage.setItem("is_logined", "false");
+                }
+            } catch (error) {
+                console.error("로그인 사용자 확인 실패", error);
+                setIsLogined(true);
+                localStorage.setItem("is_logined", "false");
+            }
+        };
+        checkLogin();
+        
     }, []);
 
     const onClickLogout = async () => {
@@ -93,7 +112,7 @@ const Header = () => {
     const onclickProfileIcon = () => {
         isLogined ? navigate("/profile") : navigate("/login");
     };
-
+    
     return (
         <HeaderContainer>
             <ProfileDiv onClick={onclickProfileIcon}>
