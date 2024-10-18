@@ -22,7 +22,7 @@ export const fetchClass = async () => {
 // 클래스 상세정보 가져오기
 export const getOneClass = async (nanoid) => {
   try {
-    const res = await axios.get(`http://localhost:3002/class/${nanoid}`);
+    const res = await axios.get(`http://localhost:3002/class/read/${nanoid}`);
     const data = res.data.data;
     return data;
   } catch (error) {
