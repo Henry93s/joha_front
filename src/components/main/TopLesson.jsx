@@ -46,13 +46,21 @@ const LessonCont = styled.div`
 const TopLesson = () => {
   const [filterDataArr, setFilterDataArr] = useState([]);
   useEffect(() => {
-    const fetchData = async () => {
-      const dataArr = await fetchClass();
-      console.log(dataArr);
-      setFilterDataArr(dataArr);
-    };
+    // useEffect 내 비동기 함수 사용하기 위한 비동기 함수 정의 및 사용
+    const dataArr = async () => {
+      try {
+        const dataArr = await fetchClass();
 
-    fetchData();
+        // 별점순 정렬
+        const sortedData = [...dataArr.data].sort((a, b) => {
+          return b["star"] - a["star"]; // 내림차순 정렬
+        });
+        setFilterDataArr(sortedData);
+      } catch (error) {
+        console.error("Error fetching class data:", error);
+      }
+    };
+    dataArr();
   }, []);
 
   const changeHandler = (e) => {
@@ -60,7 +68,7 @@ const TopLesson = () => {
 
     // 데이터 배열을 정렬하는 로직
     const sortedData = [...filterDataArr].sort((a, b) => {
-      if (value === "star" || value === "view" || value === "comments") {
+      if (value === "star" || value === "view" || value === "comment") {
         return b[value] - a[value]; // 내림차순 정렬
       }
       return 0;
@@ -77,26 +85,27 @@ const TopLesson = () => {
           <FilterSelect onChange={(e) => changeHandler(e)}>
             <option value="star">별점순</option>
             <option value="view">조회순</option>
-            <option value="comments">댓글순</option>
+            <option value="comment">댓글순</option>
           </FilterSelect>
         </FilterBox>
       </TitleBox>
       <LessonCont>
-        {filterDataArr.map((data, idx) => {
-          console.log(filterDataArr);
-          return (
-            <LessonItem
-              key={`class${idx}`}
-              image={data.main_image}
-              title={data.title}
-              star={data.star}
-              price={data.price}
-              comments={data.comments}
-              nanoid={data.nanoid}
-              author={data.author}
-            />
-          );
-        })}
+        {filterDataArr &&
+          filterDataArr.length !== 0 &&
+          filterDataArr.map((data, idx) => {
+            console.log(filterDataArr);
+            return (
+              <LessonItem
+                key={`class${idx}`}
+                image={data.main_image}
+                title={data.title}
+                star={data.star}
+                author={data.author}
+                price={data.price}
+                comment={data.comment}
+              />
+            );
+          })}
       </LessonCont>
     </Container>
   );

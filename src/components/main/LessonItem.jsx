@@ -8,13 +8,12 @@ const ItemBox = styled(Link)`
   width: calc(50% - 6px);
   overflow: hidden;
   margin-bottom: 20px;
-  color: inherit;
 `;
 const ImgBox = styled.div`
   height: 29vw;
   max-height: 240px;
   overflow: hidden;
-  & img {
+  & image {
     width: 100%;
   }
   background: #ddd;
@@ -34,9 +33,8 @@ const Info = styled.div`
   & + & {
     border-top: 1px solid #dfdfdf;
   }
-  & p {
-    white-space: nowrap;
-    max-width: 100px;
+  & .name {
+    width: 100px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -64,17 +62,9 @@ const Price = styled.strong`
   font-size: 12px;
 `;
 
-const LessonItem = ({
-  image,
-  title,
-  star,
-  price,
-  comments,
-  nanoid,
-  author,
-}) => {
+const LessonItem = ({ image, title, star, author, price, comment }) => {
   return (
-    <ItemBox to={`/class/view/${nanoid}`}>
+    <ItemBox>
       <ImgBox>
         <img src={image} />
       </ImgBox>
@@ -84,7 +74,7 @@ const LessonItem = ({
           <FlexBox>
             <SvgText>
               <Comment />
-              {comments}
+              {comment}
             </SvgText>
             <SvgText>
               <Star />
@@ -93,7 +83,7 @@ const LessonItem = ({
           </FlexBox>
         </Info>
         <Info>
-          <p>{author}</p>
+          <p className="name">{author}</p>
           <Price>₩{price.toLocaleString()}</Price>
         </Info>
       </InfoBox>
