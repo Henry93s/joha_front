@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg"; // SVG 파일을 컴포넌트로 import
 import {
   Container,
@@ -29,6 +29,7 @@ const Search = () => {
   const [selectedOption, setSelectedOption] = useState("");
 
   const [searchArray, setSearchArray] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 로컬스토리지에 저장된 최근 검색어 가져오기
@@ -47,8 +48,6 @@ const Search = () => {
 
   // 검색했을 때 로컬스토리지에 검색어, 주소 저장
   const onSearchFormSubmit = (e) => {
-    e.preventDefault();
-
     // 검색어가 없을 때
     if (!selectedOption) {
       alert("검색어를 입력해주세요.");
@@ -81,6 +80,8 @@ const Search = () => {
 
       return setArray; // 업데이트된 배열 반환
     });
+
+    navigate(`/lesson_search?keyword=${1}`);
   };
 
   // 현재 시간과 최근 검색어 검색 시간 비교하여

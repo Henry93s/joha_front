@@ -102,6 +102,12 @@ export const ItemCont = styled.ul`
     text-align: right;
   }
 `;
+export const NoItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 47vw;
+`;
 
 // ListItem.jsx style
 export const Item = styled(Link)`
@@ -111,6 +117,7 @@ export const Item = styled(Link)`
   border-bottom: 1px solid #e6e6e6;
   padding: 15px 0;
 `;
+
 export const Title = styled.p`
   font-size: 16px;
   font-weight: bold;
