@@ -50,8 +50,11 @@ const TopLesson = () => {
     const dataArr = async () => {
       try {
         const dataArr = await fetchClass();
-        console.log(dataArr)
-        setFilterDataArr(dataArr.data);
+        // 별점순 정렬
+        const sortedData = [...dataArr.data].sort((a, b) => {
+          return b["star"] - a["star"]; // 내림차순 정렬
+        });
+        setFilterDataArr(sortedData);
       } catch (error) {
         console.error("Error fetching class data:", error);
       }
@@ -86,21 +89,22 @@ const TopLesson = () => {
         </FilterBox>
       </TitleBox>
       <LessonCont>
-        {(filterDataArr && filterDataArr.length !== 0) &&
-         filterDataArr.map((data, idx) => {
-          console.log(filterDataArr);
-          return (
-            <LessonItem
-              key={`class${idx}`}
-              image={data.image}
-              title={data.title}
-              star={data.star}
-              name={data.name}
-              price={data.price}
-              comment={data.comment}
-            />
-          );
-        })}
+        {filterDataArr &&
+          filterDataArr.length !== 0 &&
+          filterDataArr.map((data, idx) => {
+            console.log(filterDataArr);
+            return (
+              <LessonItem
+                key={`class${idx}`}
+                image={data.main_image}
+                title={data.title}
+                star={data.star}
+                author={data.author}
+                price={data.price}
+                comment={data.comment}
+              />
+            );
+          })}
       </LessonCont>
     </Container>
   );

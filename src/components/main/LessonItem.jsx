@@ -29,10 +29,15 @@ const Info = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 4px 10px;
+  font-size: 12px;
   & + & {
     border-top: 1px solid #dfdfdf;
   }
-  font-size: 12px;
+  & .name {
+    width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 `;
 const FlexBox = styled.div`
   display: flex;
@@ -57,7 +62,7 @@ const Price = styled.strong`
   font-size: 12px;
 `;
 
-const LessonItem = ({ image, title, star, name, price, comment }) => {
+const LessonItem = ({ image, title, star, author, price, comment }) => {
   return (
     <ItemBox>
       <ImgBox>
@@ -78,8 +83,8 @@ const LessonItem = ({ image, title, star, name, price, comment }) => {
           </FlexBox>
         </Info>
         <Info>
-          <p>{name}</p>
-          <Price>₩{price}</Price>
+          <p className="name">{author}</p>
+          <Price>₩{price.toLocaleString()}</Price>
         </Info>
       </InfoBox>
     </ItemBox>

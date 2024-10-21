@@ -5,7 +5,6 @@ export const fetchClass = async () => {
   try {
     const res = await axios.get(`http://localhost:3002/class/read/all`);
     if(res.data.code === 200){
-
       return res.data;
     } else {
       // res.code가 200이 아닐 때
@@ -56,9 +55,13 @@ export const addWishList = async () => {
 };
 
 /* 검색한 클래스 리스트 가져오기 */
-export const getSearchClass = async () => {
+export const getSearchClass = async (title) => {
   try {
-    const res = await axios("http://localhost:3002/class/search"); // 백엔드의 가게 정보 요청 API
+    const res = await axios.get("http://localhost:3002/class/search", {
+      params: {
+        title: title,
+      },
+    }); // 백엔드의 가게 정보 요청 API
     return res;
   } catch (error) {
     console.error("Failed to fetch places:", error);
