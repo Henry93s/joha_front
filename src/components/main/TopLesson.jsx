@@ -50,7 +50,6 @@ const TopLesson = () => {
     const dataArr = async () => {
       try {
         const dataArr = await fetchClass();
-
         // 별점순 정렬
         const sortedData = [...dataArr.data].sort((a, b) => {
           return b["star"] - a["star"]; // 내림차순 정렬
