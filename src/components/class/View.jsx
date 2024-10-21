@@ -50,20 +50,7 @@ import {
 const View = () => {
   const navigate = useNavigate();
   const userState = useRecoilValue(loginState);
-  const [classInfo, setClassInfo] = useState({
-    title: "",
-    author: "",
-    contents: "",
-    main_image: "",
-    sub_images: [""],
-    main_location: "",
-    sub_location: "",
-    duration_time: "",
-    price: 0,
-    introduce: "",
-    star: "",
-    comments: [],
-  });
+  const [classInfo, setClassInfo] = useState({});
   const { id } = useParams();
   const [query, setQuery] = useSearchParams();
   const [footerPrice, setFooterPrice] = useState(0);
@@ -145,11 +132,14 @@ const View = () => {
 
   useEffect(() => {
     // 수업 정보 가져오기
-    getOneClass(id);
+    const classInfo = async () => {
+      const data = await getOneClass(id);
+      setClassInfo(data);
+    };
+    classInfo();
 
     // location 객체를 useEffect를 통해 받고 해당 컴포넌트에 사용할 state에 set
     setIs_notLink(location.state ? location.state.is_notLink : false);
-    console.log(location.state);
   }, [id]);
 
   const onApply = async () => {
@@ -157,14 +147,10 @@ const View = () => {
       const response = await axios.post(
         "/reserve/write",
         {
-          post_nanoid: id,
-          email: userState.email,
-          amount: footerPrice,
-          start_date: query.get("startDate"),
-          end_date: query.get("endDate"),
-          adult: query.get("adult"),
-          child: query.get("child"),
-          baby: query.get("baby"),
+          class_nanoid: id,
+          amount: classInfo.amount,
+          start_time: classInfo.start_time,
+          end_time: classInfo.end_time,
         },
         {
           // 쿠키를 포함시키기 위해 필요
@@ -172,8 +158,8 @@ const View = () => {
       );
 
       if (response.data.code === 200) {
-        alert("예약이 완료되었습니다.");
-        navigate("/travel");
+        alert("수업 신청이 완료되었습니다.");
+        navigate("/myclass");
       }
     } catch (error) {
       console.error(error);
@@ -219,15 +205,16 @@ const View = () => {
               <img src={classInfo.main_image}></img>
             </ImgDiv>
           </SwiperSlide>
-          {classInfo.sub_images.map((img, i) => {
-            return (
-              <SwiperSlide key={`slide${i + 1}`}>
-                <ImgDiv>
-                  <img src={img}></img>
-                </ImgDiv>
-              </SwiperSlide>
-            );
-          })}
+          {classInfo.sub_images &&
+            classInfo.sub_images.map((img, i) => {
+              return (
+                <SwiperSlide key={`slide${i + 1}`}>
+                  <ImgDiv>
+                    <img src={img}></img>
+                  </ImgDiv>
+                </SwiperSlide>
+              );
+            })}
         </Swiper>
       </SwiperDiv>
 
@@ -236,7 +223,7 @@ const View = () => {
           [{classInfo.title}]
           <StarDiv>
             <StarIcon />
-            4.7
+            {classInfo.star}
           </StarDiv>
           <ShareBtn
             type="button"
@@ -333,7 +320,10 @@ const View = () => {
         <PriceText>
           회당{" "}
           <span>
-            <strong>₩{classInfo.price.toLocaleString()}</strong> / @@시간
+            <strong>
+              ₩{classInfo.price && classInfo.price.toLocaleString()}
+            </strong>{" "}
+            / {classInfo.duration_time}시간
           </span>
         </PriceText>
         <InfoText></InfoText>
@@ -341,7 +331,7 @@ const View = () => {
         <InfoDiv>
           <p>강사 소개</p>
           {/* whiteSpace: "pre-wrap" 줄 바꿈 출력 css */}
-          <div style={{ whiteSpace: "pre-wrap" }}>{classInfo.contents}</div>
+          <div style={{ whiteSpace: "pre-wrap" }}>{classInfo.introduce}</div>
         </InfoDiv>
 
         <InfoDiv>
@@ -350,12 +340,14 @@ const View = () => {
           <div style={{ whiteSpace: "pre-wrap" }}>{classInfo.contents}</div>
         </InfoDiv>
 
-        <ReviewDiv>
-          <p>후기</p>
-          <ReviewBox>
-            <Review name={""} content={""} />
-          </ReviewBox>
-        </ReviewDiv>
+        {/*
+          <ReviewDiv>
+            <p>후기</p>
+            <ReviewBox>
+              <Review name={""} content={""} />
+            </ReviewBox>
+          </ReviewDiv>
+        */}
 
         <LocationDiv>
           <p>레슨 위치</p>
@@ -366,7 +358,9 @@ const View = () => {
               title={classInfo.title}
             />
           </Location>
-          <LocationText>{classInfo.sub_location}</LocationText>
+          <LocationText>
+            {classInfo.main_location} {classInfo.sub_location}
+          </LocationText>
         </LocationDiv>
       </Container>
       {/* 아이템을 직접 눌러서 온건지 링크로 들어온 건지에 따라 보여줌 */}
