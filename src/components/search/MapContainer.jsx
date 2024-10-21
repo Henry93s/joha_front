@@ -1,5 +1,5 @@
 import KakaoMap from "./KakaoMap"; // KakaoMap 컴포넌트
-import { useKakaoLoaderOrigin } from "../../api/useKakaoLoader";
+import useKakaoLoaderOrigin from "../../api/useKakaoLoader";
 import styled from "styled-components";
 
 const Loading = styled.div`
@@ -20,7 +20,7 @@ const MapContainer = ({ places, address }) => {
     return <div>지도를 불러오는 데 실패했습니다: {error.message}</div>; // 에러 처리
   }
 
-  return <KakaoMap places={places} />;
+  return <KakaoMap places={places} address={address} />;
 };
 
 export default MapContainer;
