@@ -96,6 +96,7 @@ const TopLesson = () => {
             return (
               <LessonItem
                 key={`class${idx}`}
+                nanoid={data.nanoid}
                 image={data.main_image}
                 title={data.title}
                 star={data.star}

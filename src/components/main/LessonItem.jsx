@@ -62,9 +62,9 @@ const Price = styled.strong`
   font-size: 12px;
 `;
 
-const LessonItem = ({ image, title, star, author, price, comment }) => {
+const LessonItem = ({ nanoid, image, title, star, author, price, comment }) => {
   return (
-    <ItemBox>
+    <ItemBox to={`/class/view/${nanoid}`}>
       <ImgBox>
         <img src={image} />
       </ImgBox>
