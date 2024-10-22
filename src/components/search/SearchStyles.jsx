@@ -176,6 +176,14 @@ export const RightBox = styled.div`
 
 export const ItemImageBox = styled.div`
   background: #ddd;
+  ${(props) =>
+    props.bg
+      ? `background-image: url(${props.bg}); 
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+      `
+      : null};
   border-radius: 10px;
   overflow: hidden;
   height: 65px;
