@@ -135,18 +135,18 @@ const ProfileEdit = () => {
     /** 유효성 검사 */
     const validateField = {
         password: (value) => {
-            if (value.length < 10) {
+            if (value && value.length < 10) {
                 return "10자 이상 입력해주세요.";
             }
-            const [hasLetter, hasNumber, hasSpecialChar] = PasswordRegex(value);
+            const [hasLetter, hasNumber, hasSpecialChar] = PasswordRegex(value || "");
             const validCombination = [hasLetter, hasNumber, hasSpecialChar].filter(Boolean).length >= 2;
             return validCombination ? "" : "영문, 숫자, 특수문자 중 2종류 이상 사용해 주세요.";
         },
         passwordCheck: (value) => {
-            return value === formData.password ? "" : "비밀번호가 일치하지 않습니다.";
+            return value && value === formData.password ? "" : "비밀번호가 일치하지 않습니다.";
         },
         phone: (value) => {
-            return PhoneNumberRegex(value) ? "" : "올바른 전화번호 형식이 아닙니다.";
+            return value && PhoneNumberRegex(value) ? "" : "올바른 전화번호 형식이 아닙니다.";
         },
     };
 
