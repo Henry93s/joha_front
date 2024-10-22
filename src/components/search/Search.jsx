@@ -81,7 +81,7 @@ const Search = () => {
       return setArray; // 업데이트된 배열 반환
     });
 
-    navigate(`/lesson_search?keyword=${1}`);
+    navigate(`/lesson_search?keyword=${selectedOption.value}`);
   };
 
   // 현재 시간과 최근 검색어 검색 시간 비교하여
