@@ -15,47 +15,46 @@ import {
 } from "./SearchStyles";
 
 const ListItem = ({
+  nanoid,
   title,
   price,
   star,
-  heart,
-  content,
+  like,
+  contents,
   img,
   view,
-  rocket,
+  is_premium,
 }) => {
   const [isOn, setIsOn] = useState(false);
 
   return (
-    <>
-      <li>
-        <Item to="/">
-          <LeftBox>
-            <Title>{title}</Title>
-            <Price>₩{price.toLocaleString()}</Price>
-            <InfoIconBox>
-              <div>
-                <StyledStarIcon />
-                {star}
-              </div>
-              <div>
-                <StyledHeartIcon />
-                {heart}
-              </div>
-            </InfoIconBox>
-            <InfoText>{content}</InfoText>
-          </LeftBox>
-          <RightBox>
-            {isOn ? (
-              <HeartFillIcon width="22px" height="22px" />
-            ) : (
-              <HeartIcon width="22px" height="22px" />
-            )}
-            <ItemImageBox src={img} />
-          </RightBox>
-        </Item>
-      </li>
-    </>
+    <li>
+      <Item to={`/class/view/${nanoid}`}>
+        <LeftBox>
+          <Title>{title}</Title>
+          <Price>₩{price.toLocaleString()}</Price>
+          <InfoIconBox>
+            <div>
+              <StyledStarIcon />
+              {star}
+            </div>
+            <div>
+              <StyledHeartIcon />
+              {like}
+            </div>
+          </InfoIconBox>
+          <InfoText>{contents}</InfoText>
+        </LeftBox>
+        <RightBox>
+          {isOn ? (
+            <HeartFillIcon width="22px" height="22px" />
+          ) : (
+            <HeartIcon width="22px" height="22px" />
+          )}
+          <ItemImageBox bg={img} />
+        </RightBox>
+      </Item>
+    </li>
   );
 };
 
