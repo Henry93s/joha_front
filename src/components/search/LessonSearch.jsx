@@ -14,7 +14,7 @@ import {
   SearchSelectStyles,
 } from "./SearchStyles";
 import { loginUserCheck } from "../../api/loginUserCheck";
-import { getSearchClass, fetchClass } from "../../api/class";
+import { getSearchClass } from "../../api/class";
 import MapContainer from "./MapContainer";
 
 const LessonSearch = () => {
@@ -37,28 +37,6 @@ const LessonSearch = () => {
   const [userAddress, setUserAddress] = useState("");
 
   useEffect(() => {
-    // 쿼리 값 가져와 searchSelect 상태에 저장(초기화)
-    if (!searchSelect) {
-      setSearchSelect(searchParams.get("keyword"));
-    }
-
-    // 유저 주변 수업 리스트 가져오기
-    const getClassList = async () => {
-      const classList = await getSearchClass(searchSelect);
-      if (classList) {
-        const AroundClasses = classList.filter((el) => {
-          return el.main_location.includes(userAddress);
-        });
-        setClassList(AroundClasses);
-        console.log(classList);
-      } else {
-        setClassList([]);
-      }
-    };
-    getClassList();
-  }, [userAddress, searchSelect]);
-
-  useEffect(() => {
     // 유저 주소 정보 가져오기
     const getUserAddress = async () => {
       const result = await loginUserCheck();
@@ -68,10 +46,38 @@ const LessonSearch = () => {
     getUserAddress();
   }, []);
 
+  useEffect(() => {
+    // 쿼리 값 가져와 searchSelect 상태에 저장(초기화)
+    if (!searchSelect) {
+      setSearchSelect(searchParams.get("keyword"));
+    }
+
+    // userAddress와 searchSelect가 설정되었을 때만 실행
+    if (!userAddress || !searchSelect) return;
+
+    // 유저 주변 수업 리스트 가져오기
+    const getClassList = async () => {
+      const result = await getSearchClass(searchSelect);
+      const classList = result?.data?.data;
+      const searchAddress = userAddress.split(" ").slice(0, 2).join(" ");
+      if (classList) {
+        const AroundClasses = classList.filter((el) => {
+          return el.main_location.includes(searchAddress);
+        });
+        setClassList(AroundClasses);
+      } else {
+        setClassList([]);
+      }
+    };
+    getClassList();
+  }, [userAddress, searchSelect]);
+
   return (
     <div>
       <MapCont>
-        <MapContainer places={classList} address={userAddress} />
+        {userAddress && (
+          <MapContainer places={classList} address={userAddress} />
+        )}
       </MapCont>
       <LessonSearchCon>
         <Inputbox>
@@ -96,14 +102,15 @@ const LessonSearch = () => {
                 return (
                   <ListItem
                     key={`ListItem${key}`}
+                    nanoid={el.nanoid}
                     title={el.title}
                     price={el.price}
                     star={el.star}
-                    heart={el.heart}
-                    content={el.content}
+                    like={el.like}
+                    contents={el.contents}
                     view={el.view}
-                    rocket={el.rocket}
-                    img={el.img}
+                    is_premium={el.is_premium}
+                    img={el.main_image}
                   />
                 );
               })
