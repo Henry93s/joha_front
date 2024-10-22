@@ -144,6 +144,7 @@ const ChangePassword = () => {
                 placeholder="비밀번호"
                 name="password"
                 value={userInfo.password}
+                required
                 onChange={onChangeHandler}
             />
             {errors.passwordError && <MessageDiv>{errors.passwordError}</MessageDiv>}
@@ -154,6 +155,7 @@ const ChangePassword = () => {
                 placeholder="비밀번호 확인"
                 name="passwordCheck"
                 value={userInfo.passwordCheck}
+                required
                 onChange={onChangeHandler}
             />
             {errors.passwordCheckError && <MessageDiv>{errors.passwordCheckError}</MessageDiv>}

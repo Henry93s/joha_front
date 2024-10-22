@@ -78,11 +78,18 @@ const Login = () => {
 
     return (
         <form onSubmit={onSubmitHandler}>
-            <LoginInput type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <LoginInput
+                type="email"
+                placeholder="이메일"
+                value={email}
+                required
+                onChange={(e) => setEmail(e.target.value)}
+            />
             <LoginInput
                 type="password"
                 placeholder="비밀번호"
                 value={password}
+                required
                 onChange={(e) => setPassword(e.target.value)}
             />
             <LinkUl>
