@@ -27,16 +27,24 @@ const Search = () => {
   ];
 
   const [selectedOption, setSelectedOption] = useState("");
-
   const [searchArray, setSearchArray] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 로그인 한 사용자만 검색할 수 있게
+    if (
+      !localStorage.getItem("is_logined") ||
+      localStorage.getItem("is_logined") === "false"
+    ) {
+      alert("로그인 후 이용해주세요");
+      navigate("/login");
+      return;
+    }
+
     // 로컬스토리지에 저장된 최근 검색어 가져오기
     const searchList = getExpireItem("recentSearch");
 
     // 로컬스토리지에 최근 검색어 있을 경우 상태에 반영
-    console.log(searchList);
     if (searchList) {
       setSearchArray(searchList);
     }
