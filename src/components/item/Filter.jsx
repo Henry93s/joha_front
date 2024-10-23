@@ -170,7 +170,7 @@ const FilterComponent = () => {
   const [filterOption, setFilterOption] = useState({
     minPrice: "",
     maxPrice: "",
-    data: "",
+    date: "",
     time: "",
   });
   const [applyFilter, setApplyFilter] = useState([]);
@@ -330,7 +330,7 @@ const FilterComponent = () => {
     setFilterOption({
       minPrice: "",
       maxPrice: "",
-      data: "",
+      date: "",
       time: "",
     });
     setIsOnce(false);
@@ -346,7 +346,7 @@ const FilterComponent = () => {
     setFilterOption({
       minPrice: "",
       maxPrice: "",
-      data: "",
+      date: "",
       time: "",
     });
     setApplyFilter([]);
