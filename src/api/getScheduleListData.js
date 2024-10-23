@@ -1,5 +1,6 @@
 import { getHolidayData } from "../utils/getHolidayData";
 import { getLunarHolidayData } from "../utils/getLunarHolidayData";
+import { fetchSchedule } from "./reserve_schedule";
 
 // 특정 날짜에 대한 이벤트 데이터를 반환하는 함수
 export const getScheduleListData = (value) => {
@@ -31,7 +32,7 @@ export const getScheduleListData = (value) => {
     }
 
     // 추가적인 이벤트 데이터 load api
-    // ...
+    // => reserve_schedule.js data 가공해서 current 에 맞는 스케줄 반영(push) 필요 
     for(var i = 0; i < 20; i++){
       newListData.push({
         type: 'my',

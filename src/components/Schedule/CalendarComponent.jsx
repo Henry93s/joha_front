@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import ScheduleListModal from "./ScheduleListModal";
 import { getScheduleListData } from "../../api/getScheduleListData";
 import "swiper/css";
+import { useNavigate } from "react-router-dom";
 
 // pc 일 때는 하단 공백에 일정 리스트를 출력할 것임
 // 모바일일 때는 일정 클릭 시 아래에서 올라오는 슬라이드 모달로 일정 리스트를 출력할 것임
@@ -136,6 +137,16 @@ const CalendarComponent = () => {
 
   // 날짜 상태 관리
   const [selectedDate, setSelectedDate] = useState(dayjs()); // 선택한 날짜 상태 관리
+
+  // localstorage is_logined check & listData 상태 관리
+  const navigate = useNavigate();
+  useEffect(() => {
+    const is_logined = localStorage.getItem("is_logined");
+    if(!is_logined || is_logined === "false"){
+      console.log("page read -> 로그인 하지 않은 사용자");
+      navigate('/');
+    }
+  },[navigate]);
 
   // 창 상태에 따른 pc 모바일 화면 보기 자동 전환
   useEffect(() => {
