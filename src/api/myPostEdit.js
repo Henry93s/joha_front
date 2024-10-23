@@ -1,8 +1,8 @@
 import axios from "axios";
-
-export const myPostUpload = async (formData) => {
+// mode 값이 추가로 담겨져야 함!!!(1: 메인 이미지, 2: 서브, 3: 둘 다 교체, 0. 교체 안함)
+export const myPostEdit = async (formData) => {
   try {
-    const res = await axios.post("http://localhost/3002/class", formData, {
+    const res = await axios.put("http://localhost:3002/post/put", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
