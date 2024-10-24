@@ -13,8 +13,10 @@ const ImgBox = styled.div`
   height: 29vw;
   max-height: 240px;
   overflow: hidden;
-  & image {
+  & img {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   background: #ddd;
 `;
