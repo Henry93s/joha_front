@@ -434,11 +434,11 @@ const ClassUpload = () => {
 
     // formdata 생성 및 데이터 추가
     const formData = new FormData();
-    // 파일들을 'images'라는 필드 이름으로 추가 (서버에는 images 에 main 첫번째 나머지 subimage로 들어가야 함)
+    // 파일들을 'photo'라는 필드 이름으로 추가 (서버에는 photo 에 main 첫번째 나머지 subimage로 들어가야 함)
     // 백엔드에서 main_image <-> sub_images 분리시킴
-    formData.append("images", data.main_image[0]);
+    formData.append("photo", data.main_image[0]);
     for (let i = 0; i < data.sub_images.length; i++) {
-      formData.append("images", data.sub_images[i]);
+      formData.append("photo", data.sub_images[i]);
     }
     formData.append("title", data.title);
     formData.append("main_available_time", data.main_available_time);
